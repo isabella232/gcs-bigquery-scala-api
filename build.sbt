@@ -2,7 +2,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.12.2",
   organization := "com.emarsys",
   name := "gcs-bigquery-scala-api",
-  version := "1.0.1"
+  version := "1.0.2"
 )
 
 lazy val IntegrationTest = config("it") extend Test

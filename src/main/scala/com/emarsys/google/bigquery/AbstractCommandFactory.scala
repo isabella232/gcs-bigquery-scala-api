@@ -53,7 +53,7 @@ trait JobCommandFactory extends AbstractCommandFactory {
   def insert(content: String,
              destinationRef: BqTableReference,
              schema: BqTableSchema,
-             sourceFormat: SourceFormat = CsvFormat,
+             sourceFormat: FileFormat = CsvFormat,
              createDisposition: CreateDisposition = CreateDisposition.CREATE_IF_NEEDED): InsertDataCommand = {
 
     val jobConfig = BqLoadJobConfig(destinationRef, schema, sourceFormat, createDisposition)
@@ -70,6 +70,11 @@ trait JobCommandFactory extends AbstractCommandFactory {
     val jobConfig = BqQueryJobConfig(query, None, None)
 
     QueryCommand(bigQuery.jobs().insert(projectId, BqQueryJob(jobConfig).toJava))
+  }
+
+  def extract(sourceTable: BqTableReference, destinationUri: String): ExtractCommand = {
+    val jobConfig = BqExtractJobConfig(sourceTable, destinationUri)
+    ExtractCommand(bigQuery.jobs().insert(sourceTable.project, BqExtractJob(jobConfig).toJava))
   }
 
   def result(jobId: String, projectId: String): ResultCommand =

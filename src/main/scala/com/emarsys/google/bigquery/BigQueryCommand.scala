@@ -19,7 +19,8 @@ case class InsertAllTableCommand(override val command: Bigquery#Tabledata#Insert
 case class CopyCommand(override val command: Bigquery#Jobs#Insert, jobConfig: BqQueryJobConfig)
     extends TableCommand[Job](command)
 case class InsertDataCommand(override val command: Bigquery#Jobs#Insert) extends TableCommand[Job](command)
-case class QueryCommand(override val command: Bigquery#Jobs#Insert)      extends TableCommand[Job](command)
+case class ExtractCommand(override val command: Bigquery#Jobs#Insert) extends TableCommand[Job](command)
+case class QueryCommand(override val command: Bigquery#Jobs#Insert) extends TableCommand[Job](command)
 case class ResultCommand(override val command: Bigquery#Jobs#GetQueryResults)
     extends TableCommand[GetQueryResultsResponse](command)
 case class JobStatusCommand(override val command: Bigquery#Jobs#Get) extends TableCommand[Job](command)
@@ -54,6 +55,8 @@ trait BigQueryExecutor {
           (c.execute.asInstanceOf[T],s"insert all: ${c.getTableId}: ")
         case CopyCommand(c, _) =>
           (c.execute.asInstanceOf[T],s"copy ${c.getProjectId}: ")
+        case ExtractCommand(c) =>
+          (c.execute.asInstanceOf[T],s"extract ${c.getProjectId}: ")
         case QueryCommand(c) =>
           (c.execute.asInstanceOf[T], s"query ${c.getProjectId}: ")
         case ResultCommand(c) =>

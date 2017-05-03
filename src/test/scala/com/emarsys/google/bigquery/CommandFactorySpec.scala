@@ -76,6 +76,13 @@ class CommandFactorySpec extends WordSpec with Matchers with CommandFactory with
         command.getProjectId shouldEqual "[project]"
         command.getJobId shouldEqual "[jobId]"
       }
+
+      "is extract" in {
+
+        val command = extract(tableReference, "destination uri").command
+
+        command.getProjectId shouldEqual "[project]"
+      }
     }
   }
 }

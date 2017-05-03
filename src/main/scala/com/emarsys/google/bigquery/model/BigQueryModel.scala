@@ -64,7 +64,7 @@ case class BqQueryJob(jobConfig: BqQueryJobConfig) extends BigQueryModel {
 
 case class BqLoadJobConfig(destinationTable: BqTableReference,
                            schema: BqTableSchema,
-                           sourceFormat: SourceFormat = CsvFormat,
+                           sourceFormat: FileFormat = CsvFormat,
                            disposition: CreateDisposition = CreateDisposition.CREATE_IF_NEEDED)
     extends BigQueryModel {
 
@@ -82,4 +82,28 @@ case class BqLoadJob(jobConfig: BqLoadJobConfig) extends BigQueryModel {
     new Job()
       .setConfiguration(new JobConfiguration().setLoad(jobConfig.toJava))
       .setJobReference(new JobReference().setProjectId(jobConfig.destinationTable.project))
+}
+
+case class BqExtractJobConfig(sourceTable: BqTableReference, destinationUri: String,
+                              printHeader: Boolean = false, fieldDelimiter: String = ",",
+                              destinationFormat: FileFormat = CsvFormat, compression: String = "NONE") extends BigQueryModel {
+
+  def toJava: JobConfigurationExtract = {
+    new JobConfigurationExtract()
+      .setSourceTable(sourceTable.toJava)
+      .setDestinationUri(destinationUri)
+      .setPrintHeader(printHeader)
+      .setFieldDelimiter(fieldDelimiter)
+      .setDestinationFormat(destinationFormat.show)
+      .setCompression(compression)
+  }
+
+}
+
+case class BqExtractJob(jobConfig: BqExtractJobConfig) extends BigQueryModel {
+
+  def toJava: Job = {
+    new Job().setConfiguration(new JobConfiguration().setExtract(jobConfig.toJava))
+  }
+
 }

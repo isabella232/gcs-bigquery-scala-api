@@ -145,4 +145,44 @@ class BigQueryModelSpec extends WordSpec with Matchers {
   }
 
 
+  "BqExtractJob" should {
+
+    val extractJobConfig = BqExtractJobConfig(bqTableReference, "destination uri")
+    val jobConfig = extractJobConfig.toJava
+
+    "build JobConfigurationExtract object with proper properties" which {
+
+      "is source table" in {
+        jobConfig.getSourceTable.getProjectId shouldEqual "project"
+        jobConfig.getSourceTable.getDatasetId shouldEqual "dataSet"
+        jobConfig.getSourceTable.getTableId shouldEqual "table"
+      }
+
+      "is destination uri" in {
+        jobConfig.getDestinationUri shouldEqual "destination uri"
+      }
+
+      "is destination format" in {
+        jobConfig.getPrintHeader shouldEqual false
+        jobConfig.getDestinationFormat shouldEqual CsvFormat.show
+        jobConfig.getFieldDelimiter shouldEqual ","
+      }
+
+      "is compression" in {
+        jobConfig.getCompression shouldEqual "NONE"
+      }
+
+    }
+
+    "build Job object" which {
+
+      val job = BqExtractJob(extractJobConfig).toJava
+
+      "holds the given configuration" in {
+        job.getConfiguration.getExtract.getDestinationUri shouldEqual "destination uri"
+      }
+    }
+
+  }
+
 }

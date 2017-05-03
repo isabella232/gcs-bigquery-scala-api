@@ -1,16 +1,16 @@
 package com.emarsys.google.bigquery.model
 
-sealed trait SourceFormat {
+sealed trait FileFormat {
   def show: String
 }
-case object CsvFormat extends SourceFormat {
+case object CsvFormat extends FileFormat {
   override def show = "CSV"
 }
 
-case object JsonFormat extends SourceFormat {
+case object JsonFormat extends FileFormat {
   override def show = "NEWLINE_DELIMITED_JSON"
 }
 
-case object AvroFormat extends SourceFormat {
+case object AvroFormat extends FileFormat {
   override def show = "AVRO"
 }

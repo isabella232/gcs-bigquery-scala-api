@@ -15,22 +15,8 @@ object QueryCondition {
       s"${alias(table)}customer_id = $customerId"
   }
 
-  case class ContactCondition(contactId: Int, table: Option[Table] = None) extends QueryCondition {
-    override def show =
-      s"${alias(table)}contact_id = $contactId"
-  }
-
-  case class LoadedAtIsInLastDays(days: Int, table: Option[Table] = None) extends QueryCondition {
-    override def show =
-      s"${alias(table)}loaded_at >= TIMESTAMP(DATE_ADD(CURRENT_DATE(),INTERVAL -$days DAY)) AND ${alias(table)}loaded_at < TIMESTAMP(CURRENT_DATE())"
-  }
-
   case object EmptyCondition extends QueryCondition {
     override def show = ""
-  }
-
-  case class LoadedAtIsInDay(date: LocalDate, table: Option[Table] = None) extends QueryCondition {
-    override def show = s"DATE(${alias(table)}loaded_at) = '${date.toString}'"
   }
 
   case class CustomerIdIsNullCondition(table: Option[Table] = None) extends QueryCondition {
@@ -56,21 +42,10 @@ object QueryCondition {
 
   def conjunction(cs: Seq[QueryCondition]): QueryCondition = Conjunction(cs)
 
-  def loadedAtIsYesterday(): QueryCondition =
-    LoadedAtIsInLastDays(1)
-
-  def loadedAtIsInLastDays(days: Int): QueryCondition =
-    LoadedAtIsInLastDays(days)
-
   def customer(customerId: Int): QueryCondition =
     CustomerCondition(customerId)
-
-  def contact(contactId: Int): QueryCondition =
-    ContactCondition(contactId)
 
   def empty: QueryCondition =
     EmptyCondition
 
-  def loadedAtIsInDay(date: LocalDate): QueryCondition =
-    LoadedAtIsInDay(date)
 }

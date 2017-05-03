@@ -10,7 +10,7 @@ import com.typesafe.config.ConfigRenderOptions
 import scala.concurrent.duration.{Duration, MILLISECONDS}
 
 
-trait Config {
+trait BigQueryConfig {
 
   val system : ActorSystem
 
@@ -29,11 +29,5 @@ trait Config {
   def configAsJson(properties: String) = {
     googleConfig.getValue(properties).render(ConfigRenderOptions.defaults().setJson(true).setOriginComments(false)).replace("\\\\","\\")
   }
-
-}
-
-object Config {
-
-
 
 }

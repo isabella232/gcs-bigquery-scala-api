@@ -23,9 +23,7 @@ class JobStatusChecker(bigQueryExecutor: BigQueryExecutor, actorSystem: ActorSys
     extends Actor
     with ActorLogging
     with CommandFactory
-    with Config {
-
-  override val system = actorSystem
+    with BigQueryConfig {
 
   lazy val bigQuery = BigQueryApi(projectId, credentialWrite)
 

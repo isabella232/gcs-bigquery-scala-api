@@ -5,7 +5,7 @@ import com.emarsys.google.bigquery.builder._
 import com.google.api.client.http.ByteArrayContent
 import com.google.api.services.bigquery.Bigquery
 import com.google.api.services.bigquery.model.Table
-import com.google.cloud.dataflow.sdk.io.BigQueryIO.Write.{CreateDisposition, WriteDisposition}
+import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
 
 trait AbstractCommandFactory {
 

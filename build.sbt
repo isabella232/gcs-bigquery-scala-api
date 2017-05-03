@@ -14,9 +14,11 @@ lazy val root = (project in file(".")).
 
 libraryDependencies ++= {
   Seq(
-    "com.typesafe.akka" %% "akka-actor"              % "2.5.0",
+    "com.typesafe.akka"         %% "akka-actor"                         % "2.5.0",
     "org.typelevel"             %% "cats"                               % "0.9.0",
-    "com.google.cloud.dataflow" %  "google-cloud-dataflow-java-sdk-all" % "1.7.0"
+    "com.google.cloud"          %  "google-cloud-bigquery"              % "0.15.0-beta",
+    "com.typesafe.akka"         %% "akka-testkit"                       % "2.5.0" % "test",
+    "org.scalatest"             %% "scalatest"                          % "3.0.1" % "test"
   )
 }
 

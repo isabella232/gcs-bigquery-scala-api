@@ -2,9 +2,9 @@ package com.emarsys.google.bigquery.model
 
 import com.emarsys.google.bigquery.builder._
 import com.google.api.services.bigquery.model._
-import com.google.cloud.dataflow.sdk.io.BigQueryIO.Write.{CreateDisposition, WriteDisposition}
 import scala.collection.JavaConverters._
-import  com.emarsys.google.bigquery.Config._
+import com.emarsys.google.bigquery.BigQueryConfig._
+import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
 
 
 sealed trait BigQueryModel

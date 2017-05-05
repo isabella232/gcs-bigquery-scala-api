@@ -21,10 +21,14 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
 
   def runAsyncJob(command: TableCommand[_], table: BqTableReference) = {
     logger.info("Executing job:" + command)
-    for {
+    (for {
       job       <- execute[Job](command)
       jobResult <- (jobStatusChecker ? GetJobResult(job.getJobReference.getJobId, table.project)).mapTo[JobResult]
-    } yield handleJobResult(table, jobResult)
+    } yield handleJobResult(table, jobResult)).recover {
+      case e: Exception =>
+        logger.error(e, "Job failed for table {}", table.table)
+        false
+    }
   }
 
   def handleJobResult(table: BqTableReference, jobResult: JobResult) = {

@@ -1,7 +1,5 @@
 package com.emarsys.google.bigquery.builder
 
-import cats.Monoid
-import org.joda.time.LocalDate
 
 sealed trait QueryCondition {
   def show: String
@@ -10,17 +8,16 @@ sealed trait QueryCondition {
 
 object QueryCondition {
 
-  case class CustomerCondition(customerId: Int, table: Option[Table] = None) extends QueryCondition {
-    override def show =
-      s"${alias(table)}customer_id = $customerId"
+  case class StringEqualsCondition(fieldName: String, value: String, table: Option[Table] = None) extends QueryCondition {
+    override def show = s"${alias(table)}$fieldName = $value"
   }
 
   case object EmptyCondition extends QueryCondition {
     override def show = ""
   }
 
-  case class CustomerIdIsNullCondition(table: Option[Table] = None) extends QueryCondition {
-    override def show = s"${alias(table)}customer_id IS NULL"
+  case class IsNullCondition(fieldName: String, table: Option[Table] = None) extends QueryCondition {
+    override def show = alias(table) + fieldName + " IS NULL"
   }
 
   case class Disjunction(cs: Seq[QueryCondition]) extends QueryCondition {
@@ -33,19 +30,26 @@ object QueryCondition {
       cs.map(_.show).filter(_.nonEmpty).reduce((c1, c2) => s"($c1 AND $c2)")
   }
 
-  implicit val conditionMonoid = new Monoid[QueryCondition] {
-    def empty                                           = EmptyCondition
-    def combine(c1: QueryCondition, c2: QueryCondition) = conjunction(Seq(c1, c2))
-  }
-
   def disjunction(cs: Seq[QueryCondition]): QueryCondition = Disjunction(cs)
 
   def conjunction(cs: Seq[QueryCondition]): QueryCondition = Conjunction(cs)
 
-  def customer(customerId: Int): QueryCondition =
-    CustomerCondition(customerId)
+  def empty: QueryCondition = EmptyCondition
 
-  def empty: QueryCondition =
-    EmptyCondition
+  implicit class ConditionExtension(condition: QueryCondition) {
+
+    def &&(otherCondition: QueryCondition): QueryCondition = conjunction(Seq(condition, otherCondition))
+
+    def ||(otherCondition: QueryCondition): QueryCondition = disjunction(Seq(condition, otherCondition))
+
+  }
+
+  implicit class FieldExtension(fieldName: String) {
+
+    def ===(value: String): QueryCondition = StringEqualsCondition(fieldName, value)
+
+    def ===(value: Int): QueryCondition = StringEqualsCondition(fieldName, value.toString)
+
+  }
 
 }

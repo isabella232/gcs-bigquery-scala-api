@@ -1,5 +1,7 @@
 package com.emarsys.google.bigquery.builder
 
+import scala.concurrent.duration.FiniteDuration
+
 
 sealed trait QueryCondition {
   def show: String
@@ -10,6 +12,10 @@ object QueryCondition {
 
   case class StringEqualsCondition(fieldName: String, value: String, table: Option[Table] = None) extends QueryCondition {
     override def show = s"${alias(table)}$fieldName = $value"
+  }
+
+  case class IsInTheLastDurationCondition(fieldName: String, duration: FiniteDuration, table: Option[Table] = None) extends QueryCondition {
+    override def show = alias(table) + fieldName + s""" > DATE_ADD(USEC_TO_TIMESTAMP(NOW()), -${duration.toSeconds}, "SECOND")"""
   }
 
   case object EmptyCondition extends QueryCondition {
@@ -49,6 +55,8 @@ object QueryCondition {
     def ===(value: String): QueryCondition = StringEqualsCondition(fieldName, value)
 
     def ===(value: Int): QueryCondition = StringEqualsCondition(fieldName, value.toString)
+
+    def isInTheLast(duration: FiniteDuration): QueryCondition = IsInTheLastDurationCondition(fieldName, duration)
 
   }
 

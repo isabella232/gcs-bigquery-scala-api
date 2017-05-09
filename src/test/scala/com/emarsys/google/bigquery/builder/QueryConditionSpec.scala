@@ -1,6 +1,7 @@
 package com.emarsys.google.bigquery.builder
 
 import org.scalatest.{Matchers, WordSpec}
+import scala.concurrent.duration._
 
 
 class QueryConditionSpec extends WordSpec with Matchers {
@@ -14,9 +15,24 @@ class QueryConditionSpec extends WordSpec with Matchers {
 
     "single condition" should {
 
-      "CustomerCondition" in {
+      "Equals condition" in {
         val expectedCondition = s"customer_id = $customerId"
         ("customer_id" === customerId).show shouldEqual expectedCondition
+      }
+
+      "IsInTheLastDuration condition with minutes" in {
+        val expected = """date_field > DATE_ADD(USEC_TO_TIMESTAMP(NOW()), -300, "SECOND")"""
+        ("date_field" isInTheLast 5.minutes).show shouldEqual expected
+      }
+
+      "IsInTheLastDuration condition with hours" in {
+        val expected = """date_field > DATE_ADD(USEC_TO_TIMESTAMP(NOW()), -3600, "SECOND")"""
+        ("date_field" isInTheLast 1.hours).show shouldEqual expected
+      }
+
+      "IsInTheLastDuration condition with seconds" in {
+        val expected = """date_field > DATE_ADD(USEC_TO_TIMESTAMP(NOW()), -3, "SECOND")"""
+        ("date_field" isInTheLast 3.seconds).show shouldEqual expected
       }
 
     }

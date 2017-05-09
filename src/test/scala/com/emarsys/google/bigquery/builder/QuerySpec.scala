@@ -18,7 +18,7 @@ class QuerySpec extends WordSpec with Matchers {
       TableQuery(StandardTableSource(tableReference)).show shouldEqual expectedQuery
     }
 
-    "use customer condition" in {
+    "use equals condition" in {
       val expectedQuery = s"SELECT * FROM `project.dataset.table` WHERE customer_id = $customerId"
       TableQuery(StandardTableSource(tableReference), "customer_id" === customerId).show shouldEqual expectedQuery
     }
@@ -26,6 +26,18 @@ class QuerySpec extends WordSpec with Matchers {
     "use given fields" in {
       val expectedQuery = s"SELECT count(*) FROM `project.dataset.table` WHERE customer_id = $customerId"
       TableQuery(StandardTableSource(tableReference), "customer_id" === customerId, "count(*)").show shouldEqual expectedQuery
+    }
+
+    "use having part" in {
+      val expectedQuery = s"SELECT id FROM `project.dataset.table` WHERE customer_id = $customerId GROUP BY name HAVING id >= 100"
+      val having = QueryHaving(groupByFields = List("name"), condition = "id" >>= 100)
+      TableQuery(StandardTableSource(tableReference), "customer_id" === customerId, "id", having).show shouldEqual expectedQuery
+    }
+
+    "use having part with additional fields needed by having" in {
+      val expectedQuery = s"SELECT id, count(id) as id_count FROM `project.dataset.table` WHERE customer_id = $customerId GROUP BY name,desc HAVING id_count >= 1"
+      val having = QueryHaving(List("count(id) as id_count"), List("name", "desc"), "id_count" >>= 1)
+      TableQuery(StandardTableSource(tableReference), "customer_id" === customerId, "id", having).show shouldEqual expectedQuery
     }
   }
 
@@ -36,7 +48,7 @@ class QuerySpec extends WordSpec with Matchers {
       TableQuery(LegacyTableSource(tableReference)).show shouldEqual expectedQuery
     }
 
-    "use customer condition" in {
+    "use equals condition" in {
       val expectedQuery = s"SELECT * FROM [project:dataset.table] WHERE customer_id = $customerId"
       TableQuery(LegacyTableSource(tableReference), "customer_id" === customerId).show shouldEqual expectedQuery
     }

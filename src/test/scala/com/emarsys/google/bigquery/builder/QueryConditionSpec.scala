@@ -20,6 +20,16 @@ class QueryConditionSpec extends WordSpec with Matchers {
         ("customer_id" === customerId).show shouldEqual expectedCondition
       }
 
+      "Less or equals condition" in {
+        val expectedCondition = s"count <= 2"
+        ("count" <<= 2).show shouldEqual expectedCondition
+      }
+
+      "Greater or equals condition" in {
+        val expectedCondition = s"count >= 2"
+        ("count" >>= 2).show shouldEqual expectedCondition
+      }
+
       "IsInTheLastDuration condition with minutes" in {
         val expected = """date_field > DATE_ADD(USEC_TO_TIMESTAMP(NOW()), -300, "SECOND")"""
         ("date_field" isInTheLast 5.minutes).show shouldEqual expected

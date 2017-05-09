@@ -14,6 +14,14 @@ object QueryCondition {
     override def show = s"${alias(table)}$fieldName = $value"
   }
 
+  case class LessOrEqualsCondition(fieldName: String, value: Int, table: Option[Table] = None) extends QueryCondition {
+    override def show = s"${alias(table)}$fieldName <= $value"
+  }
+
+  case class GreaterOrEqualsCondition(fieldName: String, value: Int, table: Option[Table] = None) extends QueryCondition {
+    override def show = s"${alias(table)}$fieldName >= $value"
+  }
+
   case class IsInTheLastDurationCondition(fieldName: String, duration: FiniteDuration, table: Option[Table] = None) extends QueryCondition {
     override def show = alias(table) + fieldName + s""" > DATE_ADD(USEC_TO_TIMESTAMP(NOW()), -${duration.toSeconds}, "SECOND")"""
   }
@@ -55,6 +63,10 @@ object QueryCondition {
     def ===(value: String): QueryCondition = StringEqualsCondition(fieldName, value)
 
     def ===(value: Int): QueryCondition = StringEqualsCondition(fieldName, value.toString)
+
+    def <<=(value: Int): QueryCondition = LessOrEqualsCondition(fieldName, value)
+
+    def >>=(value: Int): QueryCondition = GreaterOrEqualsCondition(fieldName, value)
 
     def isInTheLast(duration: FiniteDuration): QueryCondition = IsInTheLastDurationCondition(fieldName, duration)
 

@@ -35,8 +35,8 @@ class QuerySpec extends WordSpec with Matchers {
     }
 
     "use having part with additional fields needed by having" in {
-      val expectedQuery = s"SELECT id, count(id) as id_count FROM `project.dataset.table` WHERE customer_id = $customerId GROUP BY name,desc HAVING id_count >= 1"
-      val having = QueryHaving(List("count(id) as id_count"), List("name", "desc"), "id_count" >>= 1)
+      val expectedQuery = s"SELECT id, count(name) as id_count FROM `project.dataset.table` WHERE customer_id = $customerId GROUP BY name,desc HAVING id_count >= 1"
+      val having = QueryHaving(List("count(name) as id_count"), List("name", "desc"), "id_count" >>= 1)
       TableQuery(StandardTableSource(tableReference), "customer_id" === customerId, "id", having).show shouldEqual expectedQuery
     }
   }

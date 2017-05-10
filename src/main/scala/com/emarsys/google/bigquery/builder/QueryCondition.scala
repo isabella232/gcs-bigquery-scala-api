@@ -1,5 +1,7 @@
 package com.emarsys.google.bigquery.builder
 
+import org.joda.time.{DateTime, DateTimeZone}
+
 import scala.concurrent.duration.FiniteDuration
 
 
@@ -9,6 +11,13 @@ sealed trait QueryCondition {
 }
 
 object QueryCondition {
+
+  case class BetweenCondition(fieldName: String, startDate: DateTime, endDate: DateTime, table: Option[Table] = None) extends QueryCondition {
+    val fromSqlDatetime = startDate.withZone(DateTimeZone.UTC).toString("YYYY-MM-dd HH:mm:ss")
+    val toSqlDatetime = endDate.withZone(DateTimeZone.UTC).toString("YYYY-MM-dd HH:mm:ss")
+
+    override def show = s"""${alias(table)}$fieldName BETWEEN TIMESTAMP("$fromSqlDatetime UTC") AND TIMESTAMP("$toSqlDatetime UTC")"""
+  }
 
   case class StringEqualsCondition(fieldName: String, value: String, table: Option[Table] = None) extends QueryCondition {
     override def show = s"${alias(table)}$fieldName = $value"
@@ -69,6 +78,8 @@ object QueryCondition {
     def >>=(value: Int): QueryCondition = GreaterOrEqualsCondition(fieldName, value)
 
     def isInTheLast(duration: FiniteDuration): QueryCondition = IsInTheLastDurationCondition(fieldName, duration)
+
+    def between(from: DateTime, to: DateTime): QueryCondition = BetweenCondition(fieldName, from, to)
 
   }
 

@@ -1,6 +1,8 @@
 package com.emarsys.google.bigquery.builder
 
+import org.joda.time.{DateTime, DateTimeZone}
 import org.scalatest.{Matchers, WordSpec}
+
 import scala.concurrent.duration._
 
 
@@ -43,6 +45,18 @@ class QueryConditionSpec extends WordSpec with Matchers {
       "IsInTheLastDuration condition with seconds" in {
         val expected = """date_field > DATE_ADD(USEC_TO_TIMESTAMP(NOW()), -3, "SECOND")"""
         ("date_field" isInTheLast 3.seconds).show shouldEqual expected
+      }
+
+      "between condition" in {
+        val startDate = DateTime.parse("1981-08-09T14:01:02").withZoneRetainFields(DateTimeZone.forID("Europe/Budapest"))
+        val endDate = DateTime.parse("2001-10-12T00:02:11").withZoneRetainFields(DateTimeZone.forID("Europe/Budapest"))
+
+        val startDateUTC = startDate.withZone(DateTimeZone.UTC).toString("YYYY-MM-dd HH:mm:ss")
+        val endDateUTC = endDate.withZone(DateTimeZone.UTC).toString("YYYY-MM-dd HH:mm:ss")
+
+        val expectedCondition = s"""created_at BETWEEN TIMESTAMP("$startDateUTC UTC") AND TIMESTAMP("$endDateUTC UTC")"""
+
+        ("created_at" between(startDate, endDate)).show shouldEqual expectedCondition
       }
 
     }

@@ -45,12 +45,12 @@ object QueryCondition {
 
   case class Disjunction(cs: Seq[QueryCondition]) extends QueryCondition {
     override def show =
-      cs.map(_.show).filter(_.nonEmpty).reduce((c1, c2) => s"($c1 OR $c2)")
+      cs.map(_.show).filter(_.nonEmpty).foldLeft(QueryCondition.empty.show)((c1, c2) => if (c1.nonEmpty) s"($c1 OR $c2)" else c2)
   }
 
   case class Conjunction(cs: Seq[QueryCondition]) extends QueryCondition {
     override def show =
-      cs.map(_.show).filter(_.nonEmpty).reduce((c1, c2) => s"($c1 AND $c2)")
+      cs.map(_.show).filter(_.nonEmpty).foldLeft(QueryCondition.empty.show)((c1, c2) => if(c1.nonEmpty) s"($c1 AND $c2)" else c2)
   }
 
   def disjunction(cs: Seq[QueryCondition]): QueryCondition = Disjunction(cs)

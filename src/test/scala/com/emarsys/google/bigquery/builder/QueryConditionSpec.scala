@@ -80,6 +80,25 @@ class QueryConditionSpec extends WordSpec with Matchers {
           && ("customer_id" === customerId && "other_field" === otherString)).show shouldEqual expectedCondition
       }
 
+      "conjunction empty" in {
+        val expectedCondition = ""
+
+        (QueryCondition.empty && QueryCondition.empty).show shouldEqual expectedCondition
+      }
+
+      "disjuntion empty" in {
+        val expectedCondition = ""
+
+        (QueryCondition.empty || QueryCondition.empty).show shouldEqual expectedCondition
+      }
+
+      "conjunction of a disjunction and a conjunction are empty" in {
+        val expectedCondition = s""
+
+        ((QueryCondition.empty  || QueryCondition.empty )
+          && (QueryCondition.empty && QueryCondition.empty )).show shouldEqual expectedCondition
+      }
+
     }
 
   }

@@ -69,7 +69,7 @@ object QueryCondition {
 
   implicit class FieldExtension(fieldName: String) {
 
-    def ===(value: String): QueryCondition = StringEqualsCondition(fieldName, value)
+    def ===(value: String): QueryCondition = StringEqualsCondition(fieldName, "'"+value+"'")
 
     def ===(value: Int): QueryCondition = StringEqualsCondition(fieldName, value.toString)
 

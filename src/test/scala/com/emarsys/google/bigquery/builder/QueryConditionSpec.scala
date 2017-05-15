@@ -64,17 +64,17 @@ class QueryConditionSpec extends WordSpec with Matchers {
     "multiple conditions" should {
 
       "Multiple conditions" in {
-        val expectedCondition = s"(customer_id = $customerId AND other_field = $otherString)"
+        val expectedCondition = s"(customer_id = $customerId AND other_field = '$otherString')"
         ("customer_id" === customerId && "other_field" === otherString).show shouldEqual expectedCondition
       }
 
       "disjunction of conditions" in {
-        val expectedCondition = s"(customer_id = $customerId OR other_field = $otherString)"
+        val expectedCondition = s"(customer_id = $customerId OR other_field = '$otherString')"
         ("customer_id" === customerId || "other_field" === otherString).show shouldEqual expectedCondition
       }
 
       "conjunction of a disjunction and a conjunction" in {
-        val expectedCondition = s"((customer_id = $customerId OR other_field = $otherString) AND (customer_id = $customerId AND other_field = $otherString))"
+        val expectedCondition = s"((customer_id = $customerId OR other_field = '$otherString') AND (customer_id = $customerId AND other_field = '$otherString'))"
 
         (("customer_id" === customerId || "other_field" === otherString)
           && ("customer_id" === customerId && "other_field" === otherString)).show shouldEqual expectedCondition

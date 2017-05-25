@@ -1,3 +1,18 @@
-# gcs-bigquery-scala-api
+# BigQuery Scala Api
 
-[ ![Codeship Status for emartech/gcs-bigquery-scala-api](https://app.codeship.com/projects/68e10a10-121a-0135-5667-2a4a553df23d/status?branch=master)](https://app.codeship.com/projects/216915)
+
+
+## Usage
+
+
+Testing
+------------------
+
+Creating a release
+------------------
+
+Bump the version number in `build.sbt` and run the following command:
+
+    sbt publish
+
+This will build a jar with the new version and place it under the `releases` directory.

@@ -21,6 +21,29 @@ Usage in sbt:
  Create api instance:
         
         val bigQueryInstance = BigQueryApi(projectName, Config.credentialWrite)
+    
+ Create TableReference to mapping BigQuery table:
+ 
+        val tableReference = BqTableReference("[project]", "[dataSet]", "[table]")
+ 
+ Create command factory which will be use the api instance to create commands:
+ 
+         val commandFactory = new CommandFactory {
+              override implicit val bigQuery = bigQueryInstance
+         }
+  
+ Following table commands can be use via api:
+ * drop table
+ * create table
+ * insert data
+ 
+  Following job commands can be use via api:
+  * copy data to table (TableReference)
+  * extract data to url in file format (default csv) 
+  * insert data from file (default csv)
+ 
+ 
+ 
 
 Testing
 ------------------

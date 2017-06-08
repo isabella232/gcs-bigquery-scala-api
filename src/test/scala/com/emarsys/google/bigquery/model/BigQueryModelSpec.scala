@@ -1,6 +1,6 @@
 package com.emarsys.google.bigquery.model
 
-import com.emarsys.google.bigquery.builder.{StandardTableSource, TableQuery}
+import com.emarsys.google.bigquery.builder.{LegacyTableSource, StandardTableSource, TableQuery}
 import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
 import org.scalatest.{Matchers, WordSpec}
 import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
@@ -79,6 +79,16 @@ class BigQueryModelSpec extends WordSpec with Matchers {
     "build JobConfigurationQuery object with write disposition" in {
       val jobConfig = BqQueryJobConfig(TableQuery(StandardTableSource(bqTableReference)), None, Some(WriteDisposition.WRITE_APPEND)).toJava
       jobConfig.getWriteDisposition shouldEqual "WRITE_APPEND"
+    }
+
+    "set legacy sql if the query uses legacy table source" in {
+      val jobConfig = BqQueryJobConfig(TableQuery(LegacyTableSource(bqTableReference)), None, None).toJava
+      jobConfig.getUseLegacySql shouldBe true
+    }
+
+    "not set legacy sql if the query uses standard table source" in {
+      val jobConfig = BqQueryJobConfig(TableQuery(StandardTableSource(bqTableReference)), None, None).toJava
+      jobConfig.getUseLegacySql shouldBe false
     }
 
   }

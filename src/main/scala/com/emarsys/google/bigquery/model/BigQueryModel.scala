@@ -2,6 +2,7 @@ package com.emarsys.google.bigquery.model
 
 import com.emarsys.google.bigquery.builder._
 import com.google.api.services.bigquery.model._
+
 import scala.collection.JavaConverters._
 import com.emarsys.google.bigquery.BigQueryConfig._
 import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
@@ -48,7 +49,7 @@ case class BqQueryJobConfig(query: Query,
     extends BigQueryModel {
 
   def toJava = {
-    val config                = new JobConfigurationQuery().setQuery(query.show)
+    val config                = new JobConfigurationQuery().setQuery(query.show).setUseLegacySql(query.isLegacy)
     val configWithDestination = destinationTable.fold(config)(dt => config.setDestinationTable(dt.toJava))
     val configAll             = disposition.fold(configWithDestination)(d => config.setWriteDisposition(d.toString))
 

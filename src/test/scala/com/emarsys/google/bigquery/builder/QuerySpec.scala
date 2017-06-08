@@ -39,6 +39,10 @@ class QuerySpec extends WordSpec with Matchers {
       val having = QueryHaving(List("count(name) as id_count"), List("name", "desc"), "id_count" >>= 1)
       TableQuery(StandardTableSource(tableReference), "customer_id" === customerId, "id", having).show shouldEqual expectedQuery
     }
+
+    "have legacy flag set to false" in {
+      TableQuery(StandardTableSource(tableReference)).isLegacy shouldBe false
+    }
   }
 
   "Legacy TableQuery" should {
@@ -56,6 +60,10 @@ class QuerySpec extends WordSpec with Matchers {
     "use given fields" in {
       val expectedQuery = s"SELECT count(*) FROM [project:dataset.table] WHERE customer_id = $customerId"
       TableQuery(LegacyTableSource(tableReference), "customer_id" === customerId, "count(*)").show shouldEqual expectedQuery
+    }
+
+    "have legacy flag set to true" in {
+      TableQuery(LegacyTableSource(tableReference)).isLegacy shouldBe true
     }
 
   }

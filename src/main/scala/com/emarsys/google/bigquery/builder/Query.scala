@@ -2,6 +2,7 @@ package com.emarsys.google.bigquery.builder
 
 trait Query {
   def show: String
+  val isLegacy: Boolean
 }
 
 case class TableQuery(
@@ -10,6 +11,8 @@ case class TableQuery(
                        fields: String = "*",
                        queryHaving: QueryHaving = QueryHaving.empty
                      ) extends Query {
+
+  override val isLegacy = querySource.isLegacy
 
   private val where =
       if (condition.show.nonEmpty)

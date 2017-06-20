@@ -30,6 +30,10 @@ trait TableCommandFactory extends AbstractCommandFactory {
     InsertAllTableCommand(bigQuery.tabledata().insertAll(tableRef.project, tableRef.dataSet, tableRef.table, data.toJava))
   }
 
+  def getTable(tableRef: BqTableReference): GetTableCommand = {
+    GetTableCommand(bigQuery.tables().get(tableRef.project, tableRef.dataSet, tableRef.table))
+  }
+
 }
 
 trait JobCommandFactory extends AbstractCommandFactory {

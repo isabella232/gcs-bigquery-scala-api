@@ -15,7 +15,7 @@ case class DeleteTableCommand(override val command: Bigquery#Tables#Delete) exte
 case class CreateTableCommand(override val command: Bigquery#Tables#Insert) extends TableCommand[Table](command)
 case class InsertAllTableCommand(override val command: Bigquery#Tabledata#InsertAll)
     extends TableCommand[TableDataInsertAllResponse](command)
-
+case class GetTableCommand(override val command: Bigquery#Tables#Get) extends TableCommand[Table](command)
 case class CopyCommand(override val command: Bigquery#Jobs#Insert, jobConfig: BqQueryJobConfig)
     extends TableCommand[Job](command)
 case class InsertDataCommand(override val command: Bigquery#Jobs#Insert) extends TableCommand[Job](command)
@@ -65,6 +65,8 @@ trait BigQueryExecutor {
           (c.execute.asInstanceOf[T],s"status ${c.getJobId}: ")
         case InsertDataCommand(c) =>
           (c.execute.asInstanceOf[T],s"insert data ${c.getProjectId}: ")
+        case GetTableCommand(c) =>
+          (c.execute.asInstanceOf[T],s"get table ${c.getTableId}: ")
         case c =>
           throw new RuntimeException(s"Command not implemented: $c")
       }

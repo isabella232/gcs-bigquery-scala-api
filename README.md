@@ -4,40 +4,38 @@
 
 
 ## Overview
-There are many library for Google Cloud Platform except Scala. This library for Scala user who would like to write api code in Scala.
-
+There are many libraries for Google Cloud Platform except for Scala.
 
 Currently we aim at 
  * Create BigQuery jobs for running queries and tasks
  
-
 ## Setup
 
 Usage in sbt:
 
-```"com.emarsys"  %% "gcs-bigquery-scala-api"    % "1.0.8" ```
+```"com.emarsys"  %% "gcs-bigquery-scala-api"    % "1.1.0" ```
 
 ## Getting Started
  Create api instance:
         
         val bigQueryInstance = BigQueryApi(projectName, Config.credentialWrite)
     
- Create TableReference to mapping BigQuery table:
+ Create TableReference for a BigQuery table:
  
         val tableReference = BqTableReference("[project]", "[dataSet]", "[table]")
  
- Create command factory which will be use the api instance to create commands:
+ Create command factory which will use the api instance to create commands:
  
          val commandFactory = new CommandFactory {
               override implicit val bigQuery = bigQueryInstance
          }
   
- Following table commands can be use via api:
+ Following table commands can be used:
  * drop table
  * create table
  * insert data
  
-  Following job commands can be use via api:
+ Following job commands can be used:
   * copy data to table (TableReference)
   * extract data to url in file format (default csv) 
   * insert data from file (default csv)
@@ -47,6 +45,9 @@ Usage in sbt:
 
 Testing
 ------------------
+
+Specify the `GCS_READ_KEY` env var in the `.env` file, then run `sbt test`.
+
 
 Creating a release
 ------------------

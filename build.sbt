@@ -1,5 +1,5 @@
 lazy val commonSettings = Seq(
-  scalaVersion := "2.12.2",
+  scalaVersion := "2.12.7",
   organization := "com.emarsys",
   name := "gcs-bigquery-scala-api",
   version := "1.1.0"
@@ -13,13 +13,13 @@ lazy val root = (project in file(".")).
   settings(
 
 libraryDependencies ++= {
+  val akkaV = "2.5.18"
   Seq(
-    "com.typesafe.akka"         %% "akka-actor"                         % "2.5.0",
-    "org.typelevel"             %% "cats"                               % "0.9.0",
-    "com.google.cloud"          %  "google-cloud-bigquery"              % "0.13.0-beta",
-    "com.chuusai"               %% "shapeless"                          % "2.3.2",
-    "com.typesafe.akka"         %% "akka-testkit"                       % "2.5.0" % "test",
-    "org.scalatest"             %% "scalatest"                          % "3.0.1" % "test"
+    "com.typesafe.akka"         %% "akka-actor"                         % akkaV,
+    "com.google.cloud"          %  "google-cloud-bigquery"              % "1.53.0",
+    "com.chuusai"               %% "shapeless"                          % "2.3.3",
+    "com.typesafe.akka"         %% "akka-testkit"                       % akkaV % "test",
+    "org.scalatest"             %% "scalatest"                          % "3.0.5" % "test"
   )
 }
 

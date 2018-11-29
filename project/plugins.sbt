@@ -1,2 +1,3 @@
-addSbtPlugin("au.com.onegeek" %% "sbt-dotenv" % "1.2.88")
+addSbtPlugin("au.com.onegeek" %% "sbt-dotenv"   % "1.2.88")
+addSbtPlugin("com.geirsson"    % "sbt-scalafmt" % "1.6.0-RC4")
 

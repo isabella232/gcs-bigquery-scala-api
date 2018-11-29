@@ -1,6 +1,5 @@
 package com.emarsys.google.bigquery.testutil
 
-
 import com.emarsys.google.bigquery._
 import com.emarsys.google.bigquery.model.BqQueryJobConfig
 import com.google.api.services.bigquery.model.{ErrorProto, Job, JobReference, JobStatus}
@@ -16,11 +15,17 @@ trait TestExecutor extends BigQueryExecutor {
 
   def resetCommands() = commandsReceived = Seq()
 
-  override def execute[T](command: TableCommand[_])(implicit ec: ExecutionContext): Future[T] = command match {
+  override def execute[T](
+      command: TableCommand[_]
+  )(implicit ec: ExecutionContext): Future[T] = command match {
     case CopyCommand(_, jobConfig) if isOpenQueryOnErrorDate(jobConfig) =>
-      Future.successful(createJob(JobStatusChecker.STATUS_ERROR).asInstanceOf[T])
+      Future.successful(
+        createJob(JobStatusChecker.STATUS_ERROR).asInstanceOf[T]
+      )
     case JobStatusCommand(cmd) if cmd.getJobId == "project:errorId" =>
-      Future.successful(createJob(JobStatusChecker.STATUS_ERROR).asInstanceOf[T])
+      Future.successful(
+        createJob(JobStatusChecker.STATUS_ERROR).asInstanceOf[T]
+      )
     case _ =>
       if (!command.isInstanceOf[JobStatusCommand]) {
         commandsReceived +:= command
@@ -29,7 +34,8 @@ trait TestExecutor extends BigQueryExecutor {
   }
 
   def isOpenQueryOnErrorDate(jobConfig: BqQueryJobConfig) = {
-    jobConfig.query.show.contains("opens_" + oneTableErrorDate.toString("yyyyMMdd"))
+    jobConfig.query.show
+      .contains("opens_" + oneTableErrorDate.toString("yyyyMMdd"))
   }
 
   def createJob(status: String) = {

@@ -7,14 +7,16 @@ import scala.collection.JavaConverters._
 import com.emarsys.google.bigquery.BigQueryConfig._
 import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
 
-
 sealed trait BigQueryModel
 
 case class BqTableReference(project: String, dataSet: String, table: String) extends BigQueryModel {
   def toJava =
-    new TableReference().setProjectId(project).setDatasetId(dataSet).setTableId(table)
+    new TableReference()
+      .setProjectId(project)
+      .setDatasetId(dataSet)
+      .setTableId(table)
 
-  val legacyName = s"[$project:$dataSet.$table]"
+  val legacyName   = s"[$project:$dataSet.$table]"
   val standardName = s"`$project.$dataSet.$table`"
 }
 
@@ -39,19 +41,29 @@ case class BqTableRow(elem: (String, Any)*) extends BigQueryModel {
 case class BqTableData(rows: BqTableRow*) extends BigQueryModel {
   def toJava = {
     new TableDataInsertAllRequest()
-      .setRows(rows.map(row => new TableDataInsertAllRequest.Rows().setJson(row.toJava)).asJava)
+      .setRows(
+        rows
+          .map(row => new TableDataInsertAllRequest.Rows().setJson(row.toJava))
+          .asJava
+      )
   }
 }
 
-case class BqQueryJobConfig(query: Query,
-                            destinationTable: Option[BqTableReference],
-                            disposition: Option[WriteDisposition])
-    extends BigQueryModel {
+case class BqQueryJobConfig(
+    query: Query,
+    destinationTable: Option[BqTableReference],
+    disposition: Option[WriteDisposition]
+) extends BigQueryModel {
 
   def toJava = {
-    val config                = new JobConfigurationQuery().setQuery(query.show).setUseLegacySql(query.isLegacy)
-    val configWithDestination = destinationTable.fold(config)(dt => config.setDestinationTable(dt.toJava))
-    val configAll             = disposition.fold(configWithDestination)(d => config.setWriteDisposition(d.toString))
+    val config = new JobConfigurationQuery()
+      .setQuery(query.show)
+      .setUseLegacySql(query.isLegacy)
+    val configWithDestination =
+      destinationTable.fold(config)(dt => config.setDestinationTable(dt.toJava))
+    val configAll = disposition.fold(configWithDestination)(
+      d => config.setWriteDisposition(d.toString)
+    )
 
     configAll
   }
@@ -60,14 +72,16 @@ case class BqQueryJobConfig(query: Query,
 
 case class BqQueryJob(jobConfig: BqQueryJobConfig) extends BigQueryModel {
   def toJava: Job =
-    new Job().setConfiguration(new JobConfiguration().setQuery(jobConfig.toJava))
+    new Job()
+      .setConfiguration(new JobConfiguration().setQuery(jobConfig.toJava))
 }
 
-case class BqLoadJobConfig(destinationTable: BqTableReference,
-                           schema: BqTableSchema,
-                           sourceFormat: FileFormat = CsvFormat,
-                           disposition: CreateDisposition = CreateDisposition.CREATE_IF_NEEDED)
-    extends BigQueryModel {
+case class BqLoadJobConfig(
+    destinationTable: BqTableReference,
+    schema: BqTableSchema,
+    sourceFormat: FileFormat = CsvFormat,
+    disposition: CreateDisposition = CreateDisposition.CREATE_IF_NEEDED
+) extends BigQueryModel {
 
   def toJava: JobConfigurationLoad = {
     new JobConfigurationLoad()
@@ -82,12 +96,19 @@ case class BqLoadJob(jobConfig: BqLoadJobConfig) extends BigQueryModel {
   def toJava: Job =
     new Job()
       .setConfiguration(new JobConfiguration().setLoad(jobConfig.toJava))
-      .setJobReference(new JobReference().setProjectId(jobConfig.destinationTable.project))
+      .setJobReference(
+        new JobReference().setProjectId(jobConfig.destinationTable.project)
+      )
 }
 
-case class BqExtractJobConfig(sourceTable: BqTableReference, destinationUri: String,
-                              printHeader: Boolean = false, fieldDelimiter: String = ",",
-                              destinationFormat: FileFormat = CsvFormat, compression: String = "NONE") extends BigQueryModel {
+case class BqExtractJobConfig(
+    sourceTable: BqTableReference,
+    destinationUri: String,
+    printHeader: Boolean = false,
+    fieldDelimiter: String = ",",
+    destinationFormat: FileFormat = CsvFormat,
+    compression: String = "NONE"
+) extends BigQueryModel {
 
   def toJava: JobConfigurationExtract = {
     new JobConfigurationExtract()
@@ -104,7 +125,8 @@ case class BqExtractJobConfig(sourceTable: BqTableReference, destinationUri: Str
 case class BqExtractJob(jobConfig: BqExtractJobConfig) extends BigQueryModel {
 
   def toJava: Job = {
-    new Job().setConfiguration(new JobConfiguration().setExtract(jobConfig.toJava))
+    new Job()
+      .setConfiguration(new JobConfiguration().setExtract(jobConfig.toJava))
   }
 
 }

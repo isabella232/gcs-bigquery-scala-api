@@ -19,11 +19,15 @@ trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with BigQu
 
   lazy val bigQuery = BigQueryApi(projectId, credentialWrite)
 
-  def executeQuery[T](query: Query)(implicit format: BigQueryFormat[T]): Future[List[T]] = {
+  def executeQuery[T](
+      query: Query
+  )(implicit format: BigQueryFormat[T]): Future[List[T]] = {
 
     queryResult(query).map { result =>
       if (result == null) {
-        throw new UnsuccessfulQueryException("Query could not be executed: " + query.show)
+        throw new UnsuccessfulQueryException(
+          "Query could not be executed: " + query.show
+        )
       } else if (result.getTotalRows.equals(BigInteger.ZERO)) {
         List.empty[T]
       } else {
@@ -45,7 +49,8 @@ trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with BigQu
     for {
       queryResponse <- execute[Job](query(q, projectId))
       queryResult <- execute[GetQueryResultsResponse](
-        result(queryResponse.getJobReference.getJobId, projectId))
+        result(queryResponse.getJobReference.getJobId, projectId)
+      )
     } yield {
       queryResult
     }

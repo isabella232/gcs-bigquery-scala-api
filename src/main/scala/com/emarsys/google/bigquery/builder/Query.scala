@@ -6,33 +6,33 @@ trait Query {
 }
 
 case class TableQuery(
-                       querySource: QuerySource,
-                       condition: QueryCondition = QueryCondition.empty,
-                       fields: String = "*",
-                       queryHaving: QueryHaving = QueryHaving.empty
-                     ) extends Query {
+    querySource: QuerySource,
+    condition: QueryCondition = QueryCondition.empty,
+    fields: String = "*",
+    queryHaving: QueryHaving = QueryHaving.empty
+) extends Query {
 
   override val isLegacy = querySource.isLegacy
 
   private val where =
-      if (condition.show.nonEmpty)
-        s" WHERE ${condition.show}"
-      else ""
+    if (condition.show.nonEmpty)
+      s" WHERE ${condition.show}"
+    else ""
 
   private val having =
-      if (queryHaving.condition.show.nonEmpty)
-        s" HAVING ${queryHaving.condition.show}"
-      else ""
+    if (queryHaving.condition.show.nonEmpty)
+      s" HAVING ${queryHaving.condition.show}"
+    else ""
 
   private val groupBy =
-      if (queryHaving.groupByFields.isEmpty) ""
-      else " GROUP BY " + queryHaving.groupByFields.mkString(",")
+    if (queryHaving.groupByFields.isEmpty) ""
+    else " GROUP BY " + queryHaving.groupByFields.mkString(",")
 
   private val allFields = fields + (
-      if (queryHaving.fieldExpressions.isEmpty) ""
-      else ", " + queryHaving.fieldExpressions.mkString(",")
-    )
+    if (queryHaving.fieldExpressions.isEmpty) ""
+    else ", " + queryHaving.fieldExpressions.mkString(",")
+  )
 
   override def show =
-      s"SELECT $allFields FROM ${querySource.show}$where$groupBy$having"
+    s"SELECT $allFields FROM ${querySource.show}$where$groupBy$having"
 }

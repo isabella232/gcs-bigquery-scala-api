@@ -43,28 +43,39 @@ class CommandFactorySpec extends WordSpec with Matchers with CommandFactory with
 
       "is copy" in {
 
-        val command = copy(TableQuery(StandardTableSource(tableReference)), tableReference).command
+        val command = copy(
+          TableQuery(StandardTableSource(tableReference)),
+          tableReference
+        ).command
 
         command.getProjectId shouldEqual "[project]"
       }
 
       "is copy with truncate write disposition" in {
 
-        val command = copy(TableQuery(StandardTableSource(tableReference)), tableReference, WriteDisposition.WRITE_TRUNCATE)
+        val command = copy(
+          TableQuery(StandardTableSource(tableReference)),
+          tableReference,
+          WriteDisposition.WRITE_TRUNCATE
+        )
 
         command.jobConfig.disposition.get shouldEqual WriteDisposition.WRITE_TRUNCATE
       }
 
       "is insert with truncate write disposition" in {
 
-        val command = insert("[csv]", tableReference, BqTableSchema(Nil)).command
+        val command =
+          insert("[csv]", tableReference, BqTableSchema(Nil)).command
 
         command.getProjectId shouldEqual "[project]"
       }
 
       "is query" in {
 
-        val command = query(TableQuery(StandardTableSource(tableReference)), "[project]").command
+        val command = query(
+          TableQuery(StandardTableSource(tableReference)),
+          "[project]"
+        ).command
 
         command.getProjectId shouldEqual "[project]"
       }

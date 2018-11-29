@@ -28,7 +28,7 @@ package object format {
   import api._
 
   implicit object stringPrimitive extends BigQueryType[String] {
-    def toValue(s: String) = s
+    def toValue(s: String)   = s
     def fromValue(v: AnyRef) = v.toString
   }
 
@@ -46,7 +46,6 @@ package object format {
       v.toString.toDouble
   }
 
-
   implicit object FloatPrimitive extends BigQueryType[Float] {
     def toValue(s: Float) =
       s.asInstanceOf[AnyRef]
@@ -63,7 +62,8 @@ package object format {
 
   implicit object DatePrimitive extends BigQueryType[DateTime] {
     def toValue(s: DateTime) = {
-      (s.toDateTime(DateTimeZone.UTC).getMillis / 1000).toString.asInstanceOf[AnyRef]
+      (s.toDateTime(DateTimeZone.UTC).getMillis / 1000).toString
+        .asInstanceOf[AnyRef]
     }
 
     def fromValue(v: AnyRef) = {
@@ -73,16 +73,22 @@ package object format {
     }
   }
 
-  implicit def optionType[T](implicit  tType : BigQueryType[T]) : BigQueryType[Option[T]] =
+  implicit def optionType[T](
+      implicit tType: BigQueryType[T]
+  ): BigQueryType[Option[T]] =
     new BigQueryType[Option[T]] {
       override def toValue(v: Option[T]): AnyRef = (v map tType.toValue).orNull
 
-      override def fromValue(v: AnyRef): Option[T] = if (isNull(v)) None else {
-        Try(tType.fromValue(v)).toOption
-      }
+      override def fromValue(v: AnyRef): Option[T] =
+        if (isNull(v)) None
+        else {
+          Try(tType.fromValue(v)).toOption
+        }
     }
 
-  implicit def optionFormat[T](implicit tFormat : BigQueryFormat[T]): BigQueryFormat[Option[T]] =
+  implicit def optionFormat[T](
+      implicit tFormat: BigQueryFormat[T]
+  ): BigQueryFormat[Option[T]] =
     new BigQueryFormat[Option[T]] {
       override def fromTableRow(tr: TableRow): FormatResult[Option[T]] = {
         Right(tFormat.fromTableRow(tr).right.toOption)
@@ -105,31 +111,33 @@ package object format {
   implicit def hListBigQueryFormat[Key <: Symbol, Value, Tail <: HList](
       implicit witness: Witness.Aux[Key],
       valueFormatter: Lazy[BigQueryType[Value]],
-      restFormatter: Lazy[BigQueryFormat[Tail]]): BigQueryFormat[FieldType[Key, Value] :: Tail] =
+      restFormatter: Lazy[BigQueryFormat[Tail]]
+  ): BigQueryFormat[FieldType[Key, Value] :: Tail] =
     new BigQueryFormat[FieldType[Key, Value] :: Tail] {
       def toTableRow(t: FieldType[Key, Value] :: Tail): TableRow = {
         val head = valueFormatter.value.toValue(t.head)
-        val c = new TableCell
+        val c    = new TableCell
         c.setV(head)
         val rest = restFormatter.value.toTableRow(t.tail)
-        val f = rest.getF.asScala.toList
+        val f    = rest.getF.asScala.toList
         rest.setF((c :: f).asJava)
 
       }
 
-      def fromTableRow(m: TableRow): FormatResult[FieldType[Key, Value] :: Tail] = {
+      def fromTableRow(
+          m: TableRow
+      ): FormatResult[FieldType[Key, Value] :: Tail] = {
         val f: List[TableCell] = m.getF.asScala.toList
-        val v: AnyRef = f.head.getV
-          val x = valueFormatter.value.fromValue(v)
-          val h = field[Key](x)
-          m.setF(f.tail.asJava)
-          val tail = restFormatter.value.fromTableRow(m)
-          tail match {
-            case Left(e) => Left(e)
-            case Right(t) =>
-              Right(h :: t)
-          }
-
+        val v: AnyRef          = f.head.getV
+        val x                  = valueFormatter.value.fromValue(v)
+        val h                  = field[Key](x)
+        m.setF(f.tail.asJava)
+        val tail = restFormatter.value.fromTableRow(m)
+        tail match {
+          case Left(e) => Left(e)
+          case Right(t) =>
+            Right(h :: t)
+        }
 
       }
     }
@@ -144,12 +152,13 @@ package object format {
   implicit def coproductBigQueryFormat[Key <: Symbol, Value, Rest <: Coproduct](
       implicit witness: Witness.Aux[Key],
       valueFormatter: Lazy[BigQueryFormat[Value]],
-      restFormatter: Lazy[BigQueryFormat[Rest]]): BigQueryFormat[FieldType[Key, Value] :+: Rest] =
+      restFormatter: Lazy[BigQueryFormat[Rest]]
+  ): BigQueryFormat[FieldType[Key, Value] :+: Rest] =
     new BigQueryFormat[FieldType[Key, Value] :+: Rest] {
       def toTableRow(t: FieldType[Key, Value] :+: Rest) = {
         t match {
           case Inl(h) =>
-            val r = valueFormatter.value.toTableRow(h)
+            val r        = valueFormatter.value.toTableRow(h)
             val typeCell = new TableCell
             typeCell.setV(witness.value.name)
             val augmentedFields = typeCell :: r.getF.asScala.toList
@@ -160,7 +169,8 @@ package object format {
       }
 
       def fromTableRow(m: TableRow) = {
-        val thisType = m.getF.asScala.headOption.map(_.getV).contains(witness.value.name)
+        val thisType =
+          m.getF.asScala.headOption.map(_.getV).contains(witness.value.name)
         if (thisType) {
           val rowWithoutType = new TableRow()
           rowWithoutType.setF(m.getF.asScala.tail.toList.asJava)
@@ -181,9 +191,11 @@ package object format {
       }
     }
 
-  implicit def familyBigQueryFormat[T, Repr](implicit gen: LabelledGeneric.Aux[T, Repr],
-                                             reprFormatter: Lazy[BigQueryFormat[Repr]],
-                                             tpe: Typeable[T]): BigQueryFormat[T] =
+  implicit def familyBigQueryFormat[T, Repr](
+      implicit gen: LabelledGeneric.Aux[T, Repr],
+      reprFormatter: Lazy[BigQueryFormat[Repr]],
+      tpe: Typeable[T]
+  ): BigQueryFormat[T] =
     new BigQueryFormat[T] {
       def toTableRow(t: T) =
         reprFormatter.value.toTableRow(gen.to(t))
@@ -222,7 +234,7 @@ object syntax {
       s.fromTableRow(row).getOrThrowError
 
     def to[T](implicit t: BigQueryType[T]): T =
-     t.fromValue(row.getF.get(0).getV)
+      t.fromValue(row.getF.get(0).getV)
   }
 
 }

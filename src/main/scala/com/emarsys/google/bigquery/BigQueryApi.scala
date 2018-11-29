@@ -7,7 +7,10 @@ import com.google.api.services.bigquery.Bigquery
 
 object BigQueryApi {
   def apply(projectId: String, credential: GoogleCredential): Bigquery =
-    new Bigquery.Builder(new NetHttpTransport(), new JacksonFactory(), credential)
-      .setApplicationName(projectId)
+    new Bigquery.Builder(
+      new NetHttpTransport(),
+      new JacksonFactory(),
+      credential
+    ).setApplicationName(projectId)
       .build()
 }

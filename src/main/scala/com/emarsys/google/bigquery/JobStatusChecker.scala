@@ -15,12 +15,15 @@ object JobStatusChecker {
   case class PollJobResult(sender: ActorRef, jobRequest: GetJobResult)
   case class JobResult(job: Job)
 
-  def props(bigQuery: BigQueryExecutor)(implicit actorSystem: ActorSystem) = Props(new JobStatusChecker(bigQuery, actorSystem))
+  def props(bigQuery: BigQueryExecutor)(implicit actorSystem: ActorSystem) =
+    Props(new JobStatusChecker(bigQuery, actorSystem))
 
 }
 
-class JobStatusChecker(bigQueryExecutor: BigQueryExecutor, actorSystem: ActorSystem)
-    extends Actor
+class JobStatusChecker(
+    bigQueryExecutor: BigQueryExecutor,
+    actorSystem: ActorSystem
+) extends Actor
     with ActorLogging
     with CommandFactory
     with BigQueryConfig {
@@ -42,12 +45,14 @@ class JobStatusChecker(bigQueryExecutor: BigQueryExecutor, actorSystem: ActorSys
   }
 
   def queryJob(jobRequest: GetJobResult) =
-    bigQueryExecutor.execute[Job](status(jobRequest.jobId, jobRequest.projectId))
-
+    bigQueryExecutor.execute[Job](
+      status(jobRequest.jobId, jobRequest.projectId)
+    )
 
   def pollJob(sender: ActorRef, jobRequest: GetJobResult) = { job: Job =>
     if (job.getStatus.getState == STATUS_RUNNING) {
-      context.system.scheduler.scheduleOnce(jobPollTimeout, self, PollJobResult(sender, jobRequest))
+      context.system.scheduler
+        .scheduleOnce(jobPollTimeout, self, PollJobResult(sender, jobRequest))
     } else {
       sender ! JobResult(job)
     }

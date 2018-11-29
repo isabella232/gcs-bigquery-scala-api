@@ -15,70 +15,124 @@ trait AbstractCommandFactory {
 trait TableCommandFactory extends AbstractCommandFactory {
 
   def dropTable(tableRef: BqTableReference): DeleteTableCommand = {
-    DeleteTableCommand(bigQuery.tables().delete(tableRef.project, tableRef.dataSet, tableRef.table))
+    DeleteTableCommand(
+      bigQuery
+        .tables()
+        .delete(tableRef.project, tableRef.dataSet, tableRef.table)
+    )
   }
 
-  def createTable(tableRef: BqTableReference, schema: BqTableSchema): CreateTableCommand = {
+  def createTable(
+      tableRef: BqTableReference,
+      schema: BqTableSchema
+  ): CreateTableCommand = {
 
-    val table = new Table().setSchema(schema.toJava).setTableReference(tableRef.toJava)
+    val table =
+      new Table().setSchema(schema.toJava).setTableReference(tableRef.toJava)
 
-    CreateTableCommand(bigQuery.tables().insert(tableRef.project, tableRef.dataSet, table))
+    CreateTableCommand(
+      bigQuery.tables().insert(tableRef.project, tableRef.dataSet, table)
+    )
   }
 
-  def insertAll(tableRef: BqTableReference, data: BqTableData): InsertAllTableCommand = {
+  def insertAll(
+      tableRef: BqTableReference,
+      data: BqTableData
+  ): InsertAllTableCommand = {
 
-    InsertAllTableCommand(bigQuery.tabledata().insertAll(tableRef.project, tableRef.dataSet, tableRef.table, data.toJava))
+    InsertAllTableCommand(
+      bigQuery
+        .tabledata()
+        .insertAll(
+          tableRef.project,
+          tableRef.dataSet,
+          tableRef.table,
+          data.toJava
+        )
+    )
   }
 
   def getTable(tableRef: BqTableReference): GetTableCommand = {
-    GetTableCommand(bigQuery.tables().get(tableRef.project, tableRef.dataSet, tableRef.table))
+    GetTableCommand(
+      bigQuery.tables().get(tableRef.project, tableRef.dataSet, tableRef.table)
+    )
   }
 
 }
 
 trait JobCommandFactory extends AbstractCommandFactory {
 
-  def copy(query: Query,
-           destinationRef: BqTableReference,
-           writeDisposition: WriteDisposition = WriteDisposition.WRITE_APPEND): CopyCommand = {
+  def copy(
+      query: Query,
+      destinationRef: BqTableReference,
+      writeDisposition: WriteDisposition = WriteDisposition.WRITE_APPEND
+  ): CopyCommand = {
 
-    val jobConfig = BqQueryJobConfig(query, Some(destinationRef), Some(writeDisposition))
+    val jobConfig =
+      BqQueryJobConfig(query, Some(destinationRef), Some(writeDisposition))
 
-    CopyCommand(bigQuery.jobs().insert(destinationRef.project, BqQueryJob(jobConfig).toJava), jobConfig)
+    CopyCommand(
+      bigQuery
+        .jobs()
+        .insert(destinationRef.project, BqQueryJob(jobConfig).toJava),
+      jobConfig
+    )
   }
 
-  def append(query: Query,
-             destinationRef: BqTableReference): CopyCommand = {
-    val jobConfig = BqQueryJobConfig(query, Some(destinationRef), Some(WriteDisposition.WRITE_APPEND))
-    CopyCommand(bigQuery.jobs().insert(destinationRef.project, BqQueryJob(jobConfig).toJava), jobConfig)
+  def append(query: Query, destinationRef: BqTableReference): CopyCommand = {
+    val jobConfig = BqQueryJobConfig(
+      query,
+      Some(destinationRef),
+      Some(WriteDisposition.WRITE_APPEND)
+    )
+    CopyCommand(
+      bigQuery
+        .jobs()
+        .insert(destinationRef.project, BqQueryJob(jobConfig).toJava),
+      jobConfig
+    )
   }
 
+  def insert(
+      content: String,
+      destinationRef: BqTableReference,
+      schema: BqTableSchema,
+      sourceFormat: FileFormat = CsvFormat,
+      createDisposition: CreateDisposition = CreateDisposition.CREATE_IF_NEEDED
+  ): InsertDataCommand = {
 
-  def insert(content: String,
-             destinationRef: BqTableReference,
-             schema: BqTableSchema,
-             sourceFormat: FileFormat = CsvFormat,
-             createDisposition: CreateDisposition = CreateDisposition.CREATE_IF_NEEDED): InsertDataCommand = {
-
-    val jobConfig = BqLoadJobConfig(destinationRef, schema, sourceFormat, createDisposition)
+    val jobConfig =
+      BqLoadJobConfig(destinationRef, schema, sourceFormat, createDisposition)
 
     InsertDataCommand(
-        bigQuery
-          .jobs()
-          .insert(destinationRef.project,
-                  BqLoadJob(jobConfig).toJava,
-                  new ByteArrayContent("application/octet-stream", content.getBytes())))
+      bigQuery
+        .jobs()
+        .insert(
+          destinationRef.project,
+          BqLoadJob(jobConfig).toJava,
+          new ByteArrayContent("application/octet-stream", content.getBytes())
+        )
+    )
   }
 
   def query(query: Query, projectId: String): QueryCommand = {
     val jobConfig = BqQueryJobConfig(query, None, None)
 
-    QueryCommand(bigQuery.jobs().insert(projectId, BqQueryJob(jobConfig).toJava))
+    QueryCommand(
+      bigQuery.jobs().insert(projectId, BqQueryJob(jobConfig).toJava)
+    )
   }
 
-  def extract(sourceTable: BqTableReference, destinationUri: String): ExtractCommand = {
+  def extract(
+      sourceTable: BqTableReference,
+      destinationUri: String
+  ): ExtractCommand = {
     val jobConfig = BqExtractJobConfig(sourceTable, destinationUri)
-    ExtractCommand(bigQuery.jobs().insert(sourceTable.project, BqExtractJob(jobConfig).toJava))
+    ExtractCommand(
+      bigQuery
+        .jobs()
+        .insert(sourceTable.project, BqExtractJob(jobConfig).toJava)
+    )
   }
 
   def result(jobId: String, projectId: String): ResultCommand =

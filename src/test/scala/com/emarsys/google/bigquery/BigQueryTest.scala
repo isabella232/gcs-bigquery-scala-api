@@ -13,8 +13,10 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 trait BaseQueryTest extends WordSpec with Matchers with BigQueryDataAccess with ScalaFutures {
 
   implicit val logger: LoggingAdapter = null
-  implicit val executor: ExecutionContextExecutor = ExecutionContext.fromExecutor(executor)
-  implicit val defaultPatience = PatienceConfig(timeout = Span(10, Seconds), interval = Span(200, Millis))
+  implicit val executor: ExecutionContextExecutor =
+    ExecutionContext.fromExecutor(executor)
+  implicit val defaultPatience =
+    PatienceConfig(timeout = Span(10, Seconds), interval = Span(200, Millis))
 
   def mockedResult(jobId: String) = {
     if (jobId != "invalid") {
@@ -27,18 +29,22 @@ trait BaseQueryTest extends WordSpec with Matchers with BigQueryDataAccess with 
     }
   }
 
-  override def execute[T](command: TableCommand[_])(implicit ec: ExecutionContext): Future[T] = {
+  override def execute[T](
+      command: TableCommand[_]
+  )(implicit ec: ExecutionContext): Future[T] = {
     command match {
       case ResultCommand(command) =>
         Future.successful(mockedResult(command.getJobId).asInstanceOf[T])
       case QueryCommand(command) =>
-        Future.successful(createJob(command.getJsonContent.toString).asInstanceOf[T])
+        Future.successful(
+          createJob(command.getJsonContent.toString).asInstanceOf[T]
+        )
       case _ => Future.failed(new Exception("Test command is invalid"))
     }
   }
 
   def createJob(content: String) = {
-    val job = new Job()
+    val job          = new Job()
     val jobReference = new JobReference()
     if (content.contains("non_existing_field")) {
       jobReference.setJobId("invalid")

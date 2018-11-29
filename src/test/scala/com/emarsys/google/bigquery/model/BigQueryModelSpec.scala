@@ -25,7 +25,7 @@ class BigQueryModelSpec extends WordSpec with Matchers {
     "build TableFieldSchema object" in {
       val tableFieldSchema = BqTableFieldSchema("fieldName", "fieldType").toJava
       tableFieldSchema.getName shouldEqual "fieldName"
-      tableFieldSchema.getType shouldEqual  "fieldType"
+      tableFieldSchema.getType shouldEqual "fieldType"
     }
 
   }
@@ -33,11 +33,11 @@ class BigQueryModelSpec extends WordSpec with Matchers {
   "BqTableSchema" should {
 
     "build TableSchema object" in {
-      val field = BqTableFieldSchema("fieldName", "fieldType")
-      val tableSchema = BqTableSchema(List(field)).toJava
+      val field            = BqTableFieldSchema("fieldName", "fieldType")
+      val tableSchema      = BqTableSchema(List(field)).toJava
       val tableFieldSchema = tableSchema.getFields.get(0)
       tableFieldSchema.getName shouldEqual "fieldName"
-      tableFieldSchema.getType shouldEqual  "fieldType"
+      tableFieldSchema.getType shouldEqual "fieldType"
     }
 
   }
@@ -65,29 +65,49 @@ class BigQueryModelSpec extends WordSpec with Matchers {
   "BqQueryJobConfig" should {
 
     "build JobConfigurationQuery object with query" in {
-      val jobConfig = BqQueryJobConfig(TableQuery(StandardTableSource(bqTableReference)), None, None).toJava
+      val jobConfig = BqQueryJobConfig(
+        TableQuery(StandardTableSource(bqTableReference)),
+        None,
+        None
+      ).toJava
       jobConfig.getQuery shouldEqual "SELECT * FROM `project.dataSet.table`"
     }
 
     "build JobConfigurationQuery object with destination table" in {
-      val jobConfig = BqQueryJobConfig(TableQuery(StandardTableSource(bqTableReference)), Some(bqTableReference), None).toJava
+      val jobConfig = BqQueryJobConfig(
+        TableQuery(StandardTableSource(bqTableReference)),
+        Some(bqTableReference),
+        None
+      ).toJava
       jobConfig.getDestinationTable.getProjectId shouldEqual "project"
       jobConfig.getDestinationTable.getDatasetId shouldEqual "dataSet"
       jobConfig.getDestinationTable.getTableId shouldEqual "table"
     }
 
     "build JobConfigurationQuery object with write disposition" in {
-      val jobConfig = BqQueryJobConfig(TableQuery(StandardTableSource(bqTableReference)), None, Some(WriteDisposition.WRITE_APPEND)).toJava
+      val jobConfig = BqQueryJobConfig(
+        TableQuery(StandardTableSource(bqTableReference)),
+        None,
+        Some(WriteDisposition.WRITE_APPEND)
+      ).toJava
       jobConfig.getWriteDisposition shouldEqual "WRITE_APPEND"
     }
 
     "set legacy sql if the query uses legacy table source" in {
-      val jobConfig = BqQueryJobConfig(TableQuery(LegacyTableSource(bqTableReference)), None, None).toJava
+      val jobConfig = BqQueryJobConfig(
+        TableQuery(LegacyTableSource(bqTableReference)),
+        None,
+        None
+      ).toJava
       jobConfig.getUseLegacySql shouldBe true
     }
 
     "not set legacy sql if the query uses standard table source" in {
-      val jobConfig = BqQueryJobConfig(TableQuery(StandardTableSource(bqTableReference)), None, None).toJava
+      val jobConfig = BqQueryJobConfig(
+        TableQuery(StandardTableSource(bqTableReference)),
+        None,
+        None
+      ).toJava
       jobConfig.getUseLegacySql shouldBe false
     }
 
@@ -96,7 +116,13 @@ class BigQueryModelSpec extends WordSpec with Matchers {
   "BqQueryJob" should {
 
     "build Job object" in {
-      val job = BqQueryJob(BqQueryJobConfig(TableQuery(StandardTableSource(bqTableReference)), None, None)).toJava
+      val job = BqQueryJob(
+        BqQueryJobConfig(
+          TableQuery(StandardTableSource(bqTableReference)),
+          None,
+          None
+        )
+      ).toJava
       job.getConfiguration.getQuery.getQuery shouldEqual "SELECT * FROM `project.dataSet.table`"
     }
 
@@ -104,7 +130,8 @@ class BigQueryModelSpec extends WordSpec with Matchers {
 
   "BqLoadJob" should {
 
-    val bqTableSchema = BqTableSchema(List(BqTableFieldSchema("fieldName", "fieldType")))
+    val bqTableSchema =
+      BqTableSchema(List(BqTableFieldSchema("fieldName", "fieldType")))
     val loadJobConfig = BqLoadJobConfig(bqTableReference, bqTableSchema)
 
     "build JobConfigurationLoad object with proper properties" which {
@@ -126,12 +153,14 @@ class BigQueryModelSpec extends WordSpec with Matchers {
       }
 
       "is SourceFormat with JSON" in {
-        val jobConfig = BqLoadJobConfig(bqTableReference, bqTableSchema, JsonFormat).toJava
+        val jobConfig =
+          BqLoadJobConfig(bqTableReference, bqTableSchema, JsonFormat).toJava
         jobConfig.getSourceFormat shouldEqual "NEWLINE_DELIMITED_JSON"
       }
 
       "is SourceFormat with AVRO" in {
-        val jobConfig = BqLoadJobConfig(bqTableReference, bqTableSchema, AvroFormat).toJava
+        val jobConfig =
+          BqLoadJobConfig(bqTableReference, bqTableSchema, AvroFormat).toJava
         jobConfig.getSourceFormat shouldEqual "AVRO"
       }
 
@@ -140,7 +169,12 @@ class BigQueryModelSpec extends WordSpec with Matchers {
       }
 
       "is CreateDisposition with CREATE_NEVER" in {
-        val jobConfig = BqLoadJobConfig(bqTableReference, bqTableSchema, CsvFormat, CreateDisposition.CREATE_NEVER).toJava
+        val jobConfig = BqLoadJobConfig(
+          bqTableReference,
+          bqTableSchema,
+          CsvFormat,
+          CreateDisposition.CREATE_NEVER
+        ).toJava
         jobConfig.getCreateDisposition shouldEqual "CREATE_NEVER"
       }
     }
@@ -154,10 +188,10 @@ class BigQueryModelSpec extends WordSpec with Matchers {
     }
   }
 
-
   "BqExtractJob" should {
 
-    val extractJobConfig = BqExtractJobConfig(bqTableReference, "destination uri")
+    val extractJobConfig =
+      BqExtractJobConfig(bqTableReference, "destination uri")
     val jobConfig = extractJobConfig.toJava
 
     "build JobConfigurationExtract object with proper properties" which {

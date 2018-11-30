@@ -4,6 +4,7 @@ dist/*
 target/
 project/boot/
 project/plugins/project/
+local.*
 
 # IntelliJ specific
 .idea

@@ -29,9 +29,7 @@ trait BaseQueryTest extends WordSpec with Matchers with BigQueryDataAccess with 
     }
   }
 
-  override def execute[T](
-      command: TableCommand[_]
-  )(implicit ec: ExecutionContext): Future[T] = {
+  override def execute[T](command: TableCommand[T])(implicit ec: ExecutionContext): Future[T] = {
     command match {
       case ResultCommand(command) =>
         Future.successful(mockedResult(command.getJobId).asInstanceOf[T])

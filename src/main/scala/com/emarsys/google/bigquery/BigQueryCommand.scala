@@ -8,9 +8,7 @@ import org.joda.time.Duration
 
 import scala.concurrent.{ExecutionContext, Future}
 
-sealed trait BigQueryCommand
-
-abstract class TableCommand[T](val command: BigqueryRequest[T])             extends BigQueryCommand
+sealed abstract class TableCommand[T](val command: BigqueryRequest[T])
 case class DeleteTableCommand(override val command: Bigquery#Tables#Delete) extends TableCommand[Void](command)
 case class CreateTableCommand(override val command: Bigquery#Tables#Insert) extends TableCommand[Table](command)
 case class InsertAllTableCommand(
@@ -45,34 +43,30 @@ trait BigQueryExecutor {
     result
   }
 
-  def execute[T](
-      command: TableCommand[_]
-  )(implicit ec: ExecutionContext): Future[T] =
+  def execute[T](command: TableCommand[T])(implicit ec: ExecutionContext): Future[T] =
     Future {
       logTime {
         command match {
           case DeleteTableCommand(c) =>
-            (c.execute.asInstanceOf[T], s"delete:  ${c.getTableId}: ")
+            (c.execute, s"delete:  ${c.getTableId}: ")
           case CreateTableCommand(c) =>
-            (c.execute.asInstanceOf[T], s"create table ${c.getDatasetId}: ")
+            (c.execute, s"create table ${c.getDatasetId}: ")
           case InsertAllTableCommand(c) =>
-            (c.execute.asInstanceOf[T], s"insert all: ${c.getTableId}: ")
+            (c.execute, s"insert all: ${c.getTableId}: ")
           case CopyCommand(c, _) =>
-            (c.execute.asInstanceOf[T], s"copy ${c.getProjectId}: ")
+            (c.execute, s"copy ${c.getProjectId}: ")
           case ExtractCommand(c) =>
-            (c.execute.asInstanceOf[T], s"extract ${c.getProjectId}: ")
+            (c.execute, s"extract ${c.getProjectId}: ")
           case QueryCommand(c) =>
-            (c.execute.asInstanceOf[T], s"query ${c.getProjectId}: ")
+            (c.execute, s"query ${c.getProjectId}: ")
           case ResultCommand(c) =>
-            (c.execute.asInstanceOf[T], s"result ${c.getJobId}: ")
+            (c.execute, s"result ${c.getJobId}: ")
           case JobStatusCommand(c) =>
-            (c.execute.asInstanceOf[T], s"status ${c.getJobId}: ")
+            (c.execute, s"status ${c.getJobId}: ")
           case InsertDataCommand(c) =>
-            (c.execute.asInstanceOf[T], s"insert data ${c.getProjectId}: ")
+            (c.execute, s"insert data ${c.getProjectId}: ")
           case GetTableCommand(c) =>
-            (c.execute.asInstanceOf[T], s"get table ${c.getTableId}: ")
-          case c =>
-            throw new RuntimeException(s"Command not implemented: $c")
+            (c.execute, s"get table ${c.getTableId}: ")
         }
       }
 

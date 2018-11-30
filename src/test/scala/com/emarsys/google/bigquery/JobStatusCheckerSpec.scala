@@ -21,7 +21,7 @@ class JobStatusCheckerSpec
     var callIndex                = 0
 
     override def execute[T](
-        command: TableCommand[_]
+        command: TableCommand[T]
     )(implicit ec: ExecutionContext): Future[T] = {
       val statusCommand = command.asInstanceOf[JobStatusCommand].command
       if (statusCommand.getJobId == "jobId" && statusCommand.getProjectId == "projectId") {
@@ -42,7 +42,7 @@ class JobStatusCheckerSpec
     override implicit val logger = null
 
     override def execute[T](
-        command: TableCommand[_]
+        command: TableCommand[T]
     )(implicit ec: ExecutionContext): Future[T] = {
       Future.successful(createJob(JobStatusChecker.STATUS_DONE).asInstanceOf[T])
     }

@@ -16,7 +16,7 @@ trait TestExecutor extends BigQueryExecutor {
   def resetCommands() = commandsReceived = Seq()
 
   override def execute[T](
-      command: TableCommand[_]
+      command: TableCommand[T]
   )(implicit ec: ExecutionContext): Future[T] = command match {
     case CopyCommand(_, jobConfig) if isOpenQueryOnErrorDate(jobConfig) =>
       Future.successful(

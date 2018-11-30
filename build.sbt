@@ -5,7 +5,7 @@ lazy val root = (project in file("."))
       organization := "com.emarsys",
       name := "gcs-bigquery-scala-api",
       scalafmtOnCompile := true,
-      version := "1.1.0"
+      version := "1.1.1"
     ): _*)
   .settings(libraryDependencies ++= {
     val akkaV = "2.5.18"

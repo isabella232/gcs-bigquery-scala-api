@@ -5,7 +5,7 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.emarsys.google.bigquery.JobStatusChecker.{GetJobResult, JobResult}
-import com.emarsys.google.bigquery.model.BqTableReference
+import com.emarsys.google.bigquery.model.{BqTableReference, QueryResult}
 import com.google.api.services.bigquery.model.Job
 
 import scala.concurrent.ExecutionContextExecutor
@@ -31,14 +31,15 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
     } yield handleJobResult(table, jobResult)).recover {
       case e: Exception =>
         logger.error(e, "Job failed for table {}", table.table)
-        false
+        QueryResult(None)
     }
   }
 
   def handleJobResult(table: BqTableReference, jobResult: JobResult) = {
     val errorResult = Option(jobResult.job.getStatus.getErrorResult)
-    if (errorResult.isEmpty) {
+    val affectedRows: Option[Long] = if (errorResult.isEmpty) {
       logger.info("Job finished for table {}", table.table)
+      Some(jobResult.job.getStatistics.getQuery.getNumDmlAffectedRows)
     } else {
       logger.error(
         "Job failed for table {} error: {} - {} - {}",
@@ -47,7 +48,8 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
         errorResult.get.getReason,
         errorResult.get.getLocation
       )
+      None
     }
-    errorResult.isEmpty
+    QueryResult(affectedRows)
   }
 }

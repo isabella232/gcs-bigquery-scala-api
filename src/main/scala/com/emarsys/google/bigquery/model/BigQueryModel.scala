@@ -129,5 +129,3 @@ case class BqExtractJob(jobConfig: BqExtractJobConfig) extends BigQueryModel {
       .setConfiguration(new JobConfiguration().setExtract(jobConfig.toJava))
   }
 }
-
-case class QueryResult(affectedRows: Option[Long])

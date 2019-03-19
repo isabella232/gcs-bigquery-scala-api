@@ -5,10 +5,11 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.emarsys.google.bigquery.JobStatusChecker.{GetJobResult, JobResult}
-import com.emarsys.google.bigquery.model.{BqTableReference, QueryResult}
+import com.emarsys.google.bigquery.model.BigQueryJobModel.{BigQueryJobError, BigQueryJobResult}
+import com.emarsys.google.bigquery.model.BqTableReference
 import com.google.api.services.bigquery.model.Job
 
-import scala.concurrent.ExecutionContextExecutor
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration._
 
 trait BigQueryAsyncExecutor extends BigQueryExecutor {
@@ -20,7 +21,7 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
   implicit val askTimeout   = Timeout(3600.seconds)
   lazy val jobStatusChecker = system.actorOf(JobStatusChecker.props(this))
 
-  def runAsyncJob[T <: Job](command: TableCommand[T], table: BqTableReference) = {
+  def runAsyncJob[T <: Job](command: TableCommand[T], table: BqTableReference): Future[Either[BigQueryJobError, BigQueryJobResult]] = {
     logger.info("Executing job:" + command)
     (for {
       job <- execute(command)
@@ -31,15 +32,15 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
     } yield handleJobResult(table, jobResult)).recover {
       case e: Exception =>
         logger.error(e, "Job failed for table {}", table.table)
-        QueryResult(None)
+        Left(BigQueryJobError(e.getMessage, "", "", table.table))
     }
   }
 
-  def handleJobResult(table: BqTableReference, jobResult: JobResult) = {
+  def handleJobResult(table: BqTableReference, jobResult: JobResult): Either[BigQueryJobError, BigQueryJobResult] = {
     val errorResult = Option(jobResult.job.getStatus.getErrorResult)
-    val affectedRows: Option[Long] = if (errorResult.isEmpty) {
+    if (errorResult.isEmpty) {
       logger.info("Job finished for table {}", table.table)
-      Some(jobResult.job.getStatistics.getQuery.getNumDmlAffectedRows)
+      Right(BigQueryJobResult(Option(jobResult.job.getStatistics.getQuery.getNumDmlAffectedRows)))
     } else {
       logger.error(
         "Job failed for table {} error: {} - {} - {}",
@@ -48,8 +49,12 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
         errorResult.get.getReason,
         errorResult.get.getLocation
       )
-      None
+      Left(BigQueryJobError(
+        errorResult.get.getMessage,
+        errorResult.get.getReason,
+        errorResult.get.getLocation,
+        table.table
+      ))
     }
-    QueryResult(affectedRows)
   }
 }

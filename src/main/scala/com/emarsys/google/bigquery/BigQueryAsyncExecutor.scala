@@ -21,7 +21,10 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
   implicit val askTimeout   = Timeout(3600.seconds)
   lazy val jobStatusChecker = system.actorOf(JobStatusChecker.props(this))
 
-  def runAsyncJob[T <: Job](command: TableCommand[T], table: BqTableReference): Future[Either[BigQueryJobError, BigQueryJobResult]] = {
+  def runAsyncJob[T <: Job](
+      command: TableCommand[T],
+      table: BqTableReference
+  ): Future[Either[BigQueryJobError, BigQueryJobResult]] = {
     logger.info("Executing job:" + command)
     (for {
       job <- execute(command)
@@ -49,12 +52,14 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
         errorResult.get.getReason,
         errorResult.get.getLocation
       )
-      Left(BigQueryJobError(
-        errorResult.get.getMessage,
-        errorResult.get.getReason,
-        errorResult.get.getLocation,
-        table.table
-      ))
+      Left(
+        BigQueryJobError(
+          errorResult.get.getMessage,
+          errorResult.get.getReason,
+          errorResult.get.getLocation,
+          table.table
+        )
+      )
     }
   }
 }

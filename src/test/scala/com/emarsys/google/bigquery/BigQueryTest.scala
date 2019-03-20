@@ -1,9 +1,10 @@
 package com.emarsys.google.bigquery
 
+import java.lang.Long
 import java.math.BigInteger
 
 import akka.event.LoggingAdapter
-import com.google.api.services.bigquery.model.{GetQueryResultsResponse, Job, JobReference}
+import com.google.api.services.bigquery.model.{GetQueryResultsResponse, Job, JobReference, Table}
 import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -37,6 +38,9 @@ trait BaseQueryTest extends WordSpec with Matchers with BigQueryDataAccess with 
         Future.successful(
           createJob(command.getJsonContent.toString).asInstanceOf[T]
         )
+      case GetTableCommand(command) =>
+        val numOfRows: Integer = 8
+        Future.successful(new Table().setNumRows(BigInteger.valueOf(numOfRows.longValue())).asInstanceOf[T])
       case _ => Future.failed(new Exception("Test command is invalid"))
     }
   }

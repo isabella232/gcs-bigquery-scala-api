@@ -55,4 +55,9 @@ trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with BigQu
       queryResult
     }
   }
+
+  def getAmountOfTableRows(tableRef: BqTableReference): Future[BigInteger] = {
+    val table = execute[Table](getTable(tableRef))
+    table.map(table => table.getNumRows)
+  }
 }

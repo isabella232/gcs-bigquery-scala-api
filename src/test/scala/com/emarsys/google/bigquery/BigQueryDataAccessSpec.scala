@@ -1,11 +1,15 @@
 package com.emarsys.google.bigquery
 
+import java.io.IOException
+import java.math.BigInteger
+
 import com.emarsys.google.bigquery.builder.{StandardTableSource, TableQuery}
 import com.emarsys.google.bigquery.exception.UnsuccessfulQueryException
 import com.emarsys.google.bigquery.syntax._
 import com.emarsys.google.bigquery.format._
 import com.emarsys.google.bigquery.model.BqTableReference
 import org.joda.time.DateTime
+
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 case class ClickEvent(
@@ -46,5 +50,16 @@ class BigQueryDataAccessSpec extends BaseQueryTest {
       exception.getMessage contains "Query could not be executed"
     }
 
+  }
+
+  "#getAmountOfTableRows" when {
+
+    "table contains 8 rows" should {
+      "return 8" in {
+        val expectedNumOfRows = 8
+        val numOfRows         = getAmountOfTableRows(bqTableReference).futureValue
+        numOfRows shouldBe BigInteger.valueOf(expectedNumOfRows.longValue())
+      }
+    }
   }
 }

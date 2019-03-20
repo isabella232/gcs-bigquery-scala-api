@@ -33,4 +33,3 @@ inThisBuild(List(
   pgpSecretRing := file("./ci/local.secring.asc"),
   releaseEarlyWith := SonatypePublisher
 ))
-

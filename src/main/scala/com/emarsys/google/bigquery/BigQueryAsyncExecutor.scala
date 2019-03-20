@@ -12,7 +12,7 @@ import com.google.api.services.bigquery.model.Job
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration._
 
-trait BigQueryAsyncExecutor extends BigQueryExecutor {
+trait BigQueryAsyncExecutor extends BigQueryDataAccess {
 
   implicit val system: ActorSystem
   implicit val executor: ExecutionContextExecutor
@@ -32,18 +32,22 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
         job.getJobReference.getJobId,
         table.project
       )).mapTo[JobResult]
-    } yield handleJobResult(table, jobResult)).recover {
+      result <- handleJobResult(table, jobResult)
+    } yield result).recover {
       case e: Exception =>
         logger.error(e, "Job failed for table {}", table.table)
         Left(BigQueryJobError(e.getMessage, "", "", table.table))
     }
   }
 
-  def handleJobResult(table: BqTableReference, jobResult: JobResult): Either[BigQueryJobError, BigQueryJobResult] = {
+  def handleJobResult(
+      table: BqTableReference,
+      jobResult: JobResult
+  ): Future[Either[BigQueryJobError, BigQueryJobResult]] = {
     val errorResult = Option(jobResult.job.getStatus.getErrorResult)
     if (errorResult.isEmpty) {
       logger.info("Job finished for table {}", table.table)
-      Right(BigQueryJobResult(Option(jobResult.job.getStatistics.getQuery.getNumDmlAffectedRows)))
+      getAmountOfTableRows(table).map(amount => Right(BigQueryJobResult(amount)))
     } else {
       logger.error(
         "Job failed for table {} error: {} - {} - {}",
@@ -52,12 +56,14 @@ trait BigQueryAsyncExecutor extends BigQueryExecutor {
         errorResult.get.getReason,
         errorResult.get.getLocation
       )
-      Left(
-        BigQueryJobError(
-          errorResult.get.getMessage,
-          errorResult.get.getReason,
-          errorResult.get.getLocation,
-          table.table
+      Future.successful(
+        Left(
+          BigQueryJobError(
+            errorResult.get.getMessage,
+            errorResult.get.getReason,
+            errorResult.get.getLocation,
+            table.table
+          )
         )
       )
     }

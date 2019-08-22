@@ -6,4 +6,7 @@ object BigQueryJobModel {
 
   case class BigQueryJobError(message: String, reason: String, location: String, table: String) extends Throwable
 
+  case class BigQueryResourceNotFoundError(override val message: String, override val table: String)
+      extends BigQueryJobError(message, "", "", table)
+
 }

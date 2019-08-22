@@ -5,8 +5,9 @@ import akka.event.{Logging, LoggingAdapter}
 import akka.pattern.ask
 import akka.util.Timeout
 import com.emarsys.google.bigquery.JobStatusChecker.{GetJobResult, JobResult}
-import com.emarsys.google.bigquery.model.BigQueryJobModel.{BigQueryJobError, BigQueryJobResult}
+import com.emarsys.google.bigquery.model.BigQueryJobModel.{BigQueryJobError, BigQueryJobResult, BigQueryResourceNotFoundError}
 import com.emarsys.google.bigquery.model.BqTableReference
+import com.google.api.client.http.HttpResponseException
 import com.google.api.services.bigquery.model.Job
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -34,6 +35,9 @@ trait BigQueryAsyncExecutor extends BigQueryDataAccess {
       )).mapTo[JobResult]
       result <- handleJobResult(table, jobResult)
     } yield result).recover {
+      case e: HttpResponseException if e.getStatusCode == 404 =>
+        logger.error(e, "Job failed for table {}", table.table)
+        Left(BigQueryResourceNotFoundError(e.getMessage, table.table))
       case e: Exception =>
         logger.error(e, "Job failed for table {}", table.table)
         Left(BigQueryJobError(e.getMessage, "", "", table.table))

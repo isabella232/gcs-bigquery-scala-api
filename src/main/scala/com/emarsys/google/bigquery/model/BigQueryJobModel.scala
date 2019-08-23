@@ -4,9 +4,11 @@ object BigQueryJobModel {
 
   case class BigQueryJobResult(affectedRows: BigInt)
 
-  case class BigQueryJobError(message: String, reason: String, location: String, table: String) extends Throwable
+  sealed trait BigQueryJobError
 
-  case class BigQueryResourceNotFoundError(override val message: String, override val table: String)
-      extends BigQueryJobError(message, "", "", table)
+  case class GeneralBigQueryJobError(message: String, reason: String, location: String, table: String)
+      extends BigQueryJobError
+
+  case class BigQueryResourceNotFoundError(message: String, table: String) extends BigQueryJobError
 
 }

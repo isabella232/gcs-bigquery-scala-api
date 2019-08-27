@@ -4,7 +4,6 @@ import com.emarsys.google.bigquery.builder._
 import com.google.api.services.bigquery.model._
 
 import scala.collection.JavaConverters._
-import com.emarsys.google.bigquery.BigQueryConfig._
 import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
 
 sealed trait BigQueryModel

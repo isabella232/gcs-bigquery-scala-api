@@ -6,6 +6,7 @@ lazy val root = (project in file("."))
       name := "gcs-bigquery-scala-api",
       scalafmtOnCompile := true
     ): _*)
+  .settings(Defaults.itSettings: _*)
   .settings(libraryDependencies ++= {
     val akkaV = "2.5.18"
     Seq(
@@ -16,6 +17,9 @@ lazy val root = (project in file("."))
       "org.scalatest"     %% "scalatest"            % "3.0.5" % "test"
     )
   })
+  .configs(IntegrationTest)
+
+lazy val IntegrationTest = config("it") extend Test
 
 inThisBuild(List(
   licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT")),
@@ -33,3 +37,5 @@ inThisBuild(List(
   pgpSecretRing := file("./ci/local.secring.asc"),
   releaseEarlyWith := SonatypePublisher
 ))
+
+fork in root := true

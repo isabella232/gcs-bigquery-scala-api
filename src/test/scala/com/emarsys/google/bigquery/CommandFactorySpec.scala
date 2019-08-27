@@ -5,9 +5,9 @@ import com.emarsys.google.bigquery.builder.{StandardTableSource, TableQuery}
 import com.google.cloud.bigquery.JobInfo.WriteDisposition
 import org.scalatest.{Matchers, WordSpec}
 
-class CommandFactorySpec extends WordSpec with Matchers with CommandFactory with BigQueryConfig {
+class CommandFactorySpec extends WordSpec with Matchers with CommandFactory with GoogleCloudConfig {
 
-  lazy val bigQuery = BigQueryApi(projectId, credentialWrite)
+  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite)
 
   val tableReference = BqTableReference("[project]", "[dataSet]", "[table]")
 

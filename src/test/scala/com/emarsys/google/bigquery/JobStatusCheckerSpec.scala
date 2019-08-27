@@ -12,7 +12,7 @@ class JobStatusCheckerSpec
     extends TestKit(ActorSystem("testSystem"))
     with WordSpecLike
     with Matchers
-    with BigQueryConfig
+    with GoogleCloudConfig
     with ImplicitSender {
 
   class TestPollingBigQuery extends BigQueryExecutor {

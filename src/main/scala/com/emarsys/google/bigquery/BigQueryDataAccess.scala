@@ -13,11 +13,11 @@ import com.google.api.services.bigquery.model._
 import scala.collection.JavaConverters._
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
-trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with BigQueryConfig with TableCommandFactory {
+trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with GoogleCloudConfig with TableCommandFactory {
 
   implicit val executor: ExecutionContextExecutor
 
-  lazy val bigQuery = BigQueryApi(projectId, credentialWrite)
+  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite)
 
   def executeQuery[T](
       query: Query
@@ -47,9 +47,9 @@ trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with BigQu
 
   private def queryResult(q: Query): Future[GetQueryResultsResponse] = {
     for {
-      queryResponse <- execute[Job](query(q, projectId))
+      queryResponse <- execute[Job](query(q, google.projectName))
       queryResult <- execute[GetQueryResultsResponse](
-        result(queryResponse.getJobReference.getJobId, projectId)
+        result(queryResponse.getJobReference.getJobId, google.projectName)
       )
     } yield {
       queryResult

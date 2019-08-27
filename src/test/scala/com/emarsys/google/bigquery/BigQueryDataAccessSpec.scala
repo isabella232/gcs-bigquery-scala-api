@@ -25,7 +25,7 @@ class BigQueryDataAccessSpec extends BaseQueryTest {
   override implicit val executor: ExecutionContextExecutor =
     ExecutionContext.fromExecutor(executor)
 
-  override lazy val bigQuery = BigQueryApi(projectId, credentialWrite)
+  override lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite)
 
   val bqTableReference = BqTableReference("[project]", "[dataSet]", "[table]")
 

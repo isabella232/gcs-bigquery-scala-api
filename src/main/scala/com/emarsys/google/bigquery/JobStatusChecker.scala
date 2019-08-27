@@ -26,9 +26,9 @@ class JobStatusChecker(
 ) extends Actor
     with ActorLogging
     with CommandFactory
-    with BigQueryConfig {
+    with GoogleCloudConfig {
 
-  lazy val bigQuery = BigQueryApi(projectId, credentialWrite)
+  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite)
 
   import JobStatusChecker._
   import context.dispatcher

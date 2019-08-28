@@ -53,7 +53,7 @@ object BigQueryJobModel {
   }
 
   case class BigQueryJobError(message: String, reason: BigQueryErrorReason, location: String, table: String)
-      extends Throwable
+      extends Throwable(message)
 
   object BigQueryJobError {
     def apply(message: String, reason: BigQueryErrorReason, location: String, table: String): BigQueryJobError =
@@ -68,5 +68,5 @@ object BigQueryJobModel {
       )
   }
 
-  case class UnexpectedBigQueryJobError(cause: Throwable) extends Throwable
+  case class UnexpectedBigQueryJobError(cause: Throwable) extends Throwable(cause.getMessage, cause)
 }

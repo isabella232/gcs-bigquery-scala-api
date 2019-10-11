@@ -24,7 +24,7 @@ trait BigQueryAsyncExecutor extends BigQueryDataAccess {
 
 class BigQueryAsyncExecutorInstance(implicit system: ActorSystem, override val executor: ExecutionContextExecutor)
     extends BigQueryAsyncExecutor {
-  implicit val askTimeout: Timeout                  = Timeout(3600.seconds)
+  implicit val askTimeout: Timeout                  = Timeout(google.bigQuery.jobTimeout)
   lazy val jobStatusChecker: ActorRef               = system.actorOf(JobStatusChecker.props(this))
   override implicit lazy val logger: LoggingAdapter = Logging(system, classOf[BigQueryAsyncExecutorInstance])
 

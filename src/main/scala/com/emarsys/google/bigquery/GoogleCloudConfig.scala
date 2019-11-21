@@ -43,10 +43,11 @@ trait GoogleCloudConfig {
         dataset = googleConfig.getString("bigQuery.dataset"),
         resultsDataset = googleConfig.getString("bigQuery.resultsDataset"),
         jobTimeout = GoogleCloudConfig.getFiniteDuration(googleConfig, "bigQuery.job-timeout"),
-        queryResultExpiration = googleConfig.getInt("query-result-expiration-seconds").seconds
+        queryResultExpiration = googleConfig.getInt("query-result-expiration-seconds").seconds,
+        httpConnectionTimeout = GoogleCloudConfig.getFiniteDuration(googleConfig, "bigQuery.http-connection-timeout"),
+        httpReadTimeout = GoogleCloudConfig.getFiniteDuration(googleConfig, "bigQuery.http-read-timeout")
       )
     )
-
 }
 
 object GoogleCloudConfig extends GoogleCloudConfig {
@@ -59,7 +60,9 @@ object GoogleCloudConfig extends GoogleCloudConfig {
       dataset: String,
       resultsDataset: String,
       jobTimeout: FiniteDuration,
-      queryResultExpiration: FiniteDuration
+      queryResultExpiration: FiniteDuration,
+      httpConnectionTimeout: FiniteDuration,
+      httpReadTimeout: FiniteDuration
   )
   def getFiniteDuration(conf: com.typesafe.config.Config, key: String): FiniteDuration =
     Some(Duration(conf.getString(key))) collect { case d: FiniteDuration => d } get

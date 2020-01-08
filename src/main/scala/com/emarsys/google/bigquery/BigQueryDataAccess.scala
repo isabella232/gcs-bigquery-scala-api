@@ -28,6 +28,10 @@ trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with Googl
         throw new UnsuccessfulQueryException(
           "Query could not be executed: " + query.show
         )
+      } else if (result.getErrors != null && !result.getErrors.isEmpty) {
+        throw new UnsuccessfulQueryException(
+          "Query could not be executed: " + query.show + ", due to errors: " + result.getErrors
+        )
       } else if (result.getTotalRows.equals(BigInteger.ZERO)) {
         List.empty[T]
       } else {

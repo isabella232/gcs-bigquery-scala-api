@@ -4,9 +4,9 @@ import java.math.BigInteger
 
 import com.emarsys.google.bigquery.api.BigQueryFormat
 import com.emarsys.google.bigquery.builder.Query
-import com.emarsys.google.bigquery.syntax._
 import com.emarsys.google.bigquery.exception.UnsuccessfulQueryException
 import com.emarsys.google.bigquery.model.BqTableReference
+import com.emarsys.google.bigquery.syntax._
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.services.bigquery.model._
 
@@ -26,11 +26,15 @@ trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with Googl
     queryResult(query).map { result =>
       if (result == null) {
         throw new UnsuccessfulQueryException(
-          "Query could not be executed: " + query.show
+          s"Query could not be executed: ${query.show}"
         )
       } else if (result.getErrors != null && !result.getErrors.isEmpty) {
         throw new UnsuccessfulQueryException(
-          "Query could not be executed: " + query.show + ", due to errors: " + result.getErrors
+          s"Query could not be executed: ${query.show}, due to errors: ${result.getErrors}"
+        )
+      } else if (result.getTotalRows == null) {
+        throw new UnsuccessfulQueryException(
+          s"Query could not be executed: ${query.show}. Result: $result"
         )
       } else if (result.getTotalRows.equals(BigInteger.ZERO)) {
         List.empty[T]

@@ -32,7 +32,7 @@ trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with Googl
         throw new UnsuccessfulQueryException(
           s"Query could not be executed: ${query.show}, due to errors. Result: $result"
         )
-      } else if (result.getTotalRows == null) {
+      } else if (!result.getJobComplete) {
         throw new UnsuccessfulQueryException(
           s"Query could not be executed: ${query.show}. Result: $result"
         )

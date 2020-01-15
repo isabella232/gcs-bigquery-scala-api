@@ -23,7 +23,7 @@ trait BaseQueryTest extends WordSpec with Matchers with BigQueryDataAccess with 
     if (jobId != "invalid") {
       val response = new GetQueryResultsResponse()
       response.setTotalRows(BigInteger.ZERO)
-      response
+      response.setJobComplete(true)
     } else {
       val response = null
       response

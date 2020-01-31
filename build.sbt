@@ -8,12 +8,12 @@ lazy val root = (project in file("."))
     ): _*)
   .settings(Defaults.itSettings: _*)
   .settings(libraryDependencies ++= {
-    val akkaV = "2.5.18"
+    val akkaV = "2.6.3"
     Seq(
-      "com.typesafe.akka" %% "akka-actor"           % akkaV,
-      "com.google.cloud"  % "google-cloud-bigquery" % "1.102.0",
       "com.chuusai"       %% "shapeless"            % "2.3.3",
+      "com.typesafe.akka" %% "akka-actor"           % akkaV,
       "com.typesafe.akka" %% "akka-testkit"         % akkaV % "test",
+      "com.google.cloud"  % "google-cloud-bigquery" % "1.102.0",
       "org.scalatest"     %% "scalatest"            % "3.1.0" % "test",
       "joda-time"         % "joda-time"             % "2.10.5"
     )

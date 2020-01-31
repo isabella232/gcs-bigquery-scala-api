@@ -4,13 +4,14 @@ import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}
 import com.emarsys.google.bigquery.JobStatusChecker.{GetJobResult, JobResult}
 import com.google.api.services.bigquery.model.{Job, JobStatus}
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class JobStatusCheckerSpec
     extends TestKit(ActorSystem("testSystem"))
-    with WordSpecLike
+    with AnyWordSpecLike
     with Matchers
     with GoogleCloudConfig
     with ImplicitSender {

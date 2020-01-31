@@ -1,9 +1,10 @@
 package com.emarsys.google.bigquery.builder
 
 import com.emarsys.google.bigquery.model.BqTableReference
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class QuerySpec extends WordSpec with Matchers {
+class QuerySpec extends AnyWordSpec with Matchers {
 
   import QueryCondition._
 

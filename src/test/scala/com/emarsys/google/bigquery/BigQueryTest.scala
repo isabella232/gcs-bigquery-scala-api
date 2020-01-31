@@ -1,17 +1,17 @@
 package com.emarsys.google.bigquery
 
-import java.lang.Long
 import java.math.BigInteger
 
 import akka.event.LoggingAdapter
 import com.google.api.services.bigquery.model.{GetQueryResultsResponse, Job, JobReference, Table}
-import org.scalatest.{Matchers, WordSpec}
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 
-trait BaseQueryTest extends WordSpec with Matchers with BigQueryDataAccess with ScalaFutures {
+trait BaseQueryTest extends AnyWordSpec with Matchers with BigQueryDataAccess with ScalaFutures {
 
   implicit val logger: LoggingAdapter = null
   implicit val executor: ExecutionContextExecutor =

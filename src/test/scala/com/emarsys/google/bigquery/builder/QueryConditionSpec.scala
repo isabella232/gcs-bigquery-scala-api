@@ -1,11 +1,12 @@
 package com.emarsys.google.bigquery.builder
 
 import org.joda.time.{DateTime, DateTimeZone}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.duration._
 
-class QueryConditionSpec extends WordSpec with Matchers {
+class QueryConditionSpec extends AnyWordSpec with Matchers {
 
   import QueryCondition._
 

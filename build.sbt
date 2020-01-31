@@ -14,7 +14,7 @@ lazy val root = (project in file("."))
       "com.google.cloud"  % "google-cloud-bigquery" % "1.53.0",
       "com.chuusai"       %% "shapeless"            % "2.3.3",
       "com.typesafe.akka" %% "akka-testkit"         % akkaV % "test",
-      "org.scalatest"     %% "scalatest"            % "3.0.5" % "test"
+      "org.scalatest"     %% "scalatest"            % "3.1.0" % "test"
     )
   })
   .configs(IntegrationTest)

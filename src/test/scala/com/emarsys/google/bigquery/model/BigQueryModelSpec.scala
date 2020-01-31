@@ -2,10 +2,10 @@ package com.emarsys.google.bigquery.model
 
 import com.emarsys.google.bigquery.builder.{LegacyTableSource, StandardTableSource, TableQuery}
 import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
-import org.scalatest.{Matchers, WordSpec}
-import com.google.cloud.bigquery.JobInfo.{CreateDisposition, WriteDisposition}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class BigQueryModelSpec extends WordSpec with Matchers {
+class BigQueryModelSpec extends AnyWordSpec with Matchers {
 
   val bqTableReference = BqTableReference("project", "dataSet", "table")
 

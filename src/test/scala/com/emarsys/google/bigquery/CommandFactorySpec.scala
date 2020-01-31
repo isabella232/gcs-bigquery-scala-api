@@ -3,9 +3,10 @@ package com.emarsys.google.bigquery
 import com.emarsys.google.bigquery.model.{BqTableData, BqTableReference, BqTableSchema}
 import com.emarsys.google.bigquery.builder.{StandardTableSource, TableQuery}
 import com.google.cloud.bigquery.JobInfo.WriteDisposition
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class CommandFactorySpec extends WordSpec with Matchers with CommandFactory with GoogleCloudConfig {
+class CommandFactorySpec extends AnyWordSpec with Matchers with CommandFactory with GoogleCloudConfig {
 
   lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite)
 

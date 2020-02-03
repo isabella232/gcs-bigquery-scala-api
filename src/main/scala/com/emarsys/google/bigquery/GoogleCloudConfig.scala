@@ -65,5 +65,5 @@ object GoogleCloudConfig extends GoogleCloudConfig {
       httpReadTimeout: FiniteDuration
   )
   def getFiniteDuration(conf: com.typesafe.config.Config, key: String): FiniteDuration =
-    Some(Duration(conf.getString(key))) collect { case d: FiniteDuration => d } get
+    Some(Duration(conf.getString(key))).collect { case d: FiniteDuration => d }.get
 }

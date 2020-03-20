@@ -65,7 +65,8 @@ trait JobCommandFactory extends AbstractCommandFactory {
   def copy(
       query: Query,
       destinationRef: BqTableReference,
-      writeDisposition: WriteDisposition = WriteDisposition.WRITE_APPEND
+      writeDisposition: WriteDisposition = WriteDisposition.WRITE_APPEND,
+      labels: Map[String, String] = Map.empty
   ): CopyCommand = {
 
     val jobConfig =
@@ -74,12 +75,12 @@ trait JobCommandFactory extends AbstractCommandFactory {
     CopyCommand(
       bigQuery
         .jobs()
-        .insert(destinationRef.project, BqQueryJob(jobConfig).toJava),
+        .insert(destinationRef.project, BqQueryJob(jobConfig, labels).toJava),
       jobConfig
     )
   }
 
-  def append(query: Query, destinationRef: BqTableReference): CopyCommand = {
+  def append(query: Query, destinationRef: BqTableReference, labels: Map[String, String] = Map.empty): CopyCommand = {
     val jobConfig = BqQueryJobConfig(
       query,
       Some(destinationRef),
@@ -88,7 +89,7 @@ trait JobCommandFactory extends AbstractCommandFactory {
     CopyCommand(
       bigQuery
         .jobs()
-        .insert(destinationRef.project, BqQueryJob(jobConfig).toJava),
+        .insert(destinationRef.project, BqQueryJob(jobConfig, labels).toJava),
       jobConfig
     )
   }
@@ -115,23 +116,24 @@ trait JobCommandFactory extends AbstractCommandFactory {
     )
   }
 
-  def query(query: Query, projectId: String): QueryCommand = {
+  def query(query: Query, projectId: String, labels: Map[String, String] = Map.empty): QueryCommand = {
     val jobConfig = BqQueryJobConfig(query, None, None)
 
     QueryCommand(
-      bigQuery.jobs().insert(projectId, BqQueryJob(jobConfig).toJava)
+      bigQuery.jobs().insert(projectId, BqQueryJob(jobConfig, labels).toJava)
     )
   }
 
   def extract(
       sourceTable: BqTableReference,
-      destinationUri: String
+      destinationUri: String,
+      labels: Map[String, String] = Map.empty
   ): ExtractCommand = {
     val jobConfig = BqExtractJobConfig(sourceTable, destinationUri)
     ExtractCommand(
       bigQuery
         .jobs()
-        .insert(sourceTable.project, BqExtractJob(jobConfig).toJava)
+        .insert(sourceTable.project, BqExtractJob(jobConfig, labels).toJava)
     )
   }
 

@@ -66,13 +66,13 @@ case class BqQueryJobConfig(
 
     configAll
   }
-
 }
 
-case class BqQueryJob(jobConfig: BqQueryJobConfig) extends BigQueryModel {
+case class BqQueryJob(jobConfig: BqQueryJobConfig, labels: Map[String, String]) extends BigQueryModel {
+  import collection.JavaConverters._
   def toJava: Job =
     new Job()
-      .setConfiguration(new JobConfiguration().setQuery(jobConfig.toJava))
+      .setConfiguration(new JobConfiguration().setQuery(jobConfig.toJava).setLabels(labels.asJava))
 }
 
 case class BqLoadJobConfig(
@@ -121,10 +121,10 @@ case class BqExtractJobConfig(
 
 }
 
-case class BqExtractJob(jobConfig: BqExtractJobConfig) extends BigQueryModel {
-
+case class BqExtractJob(jobConfig: BqExtractJobConfig, labels: Map[String, String]) extends BigQueryModel {
+  import collection.JavaConverters._
   def toJava: Job = {
     new Job()
-      .setConfiguration(new JobConfiguration().setExtract(jobConfig.toJava))
+      .setConfiguration(new JobConfiguration().setExtract(jobConfig.toJava).setLabels(labels.asJava))
   }
 }

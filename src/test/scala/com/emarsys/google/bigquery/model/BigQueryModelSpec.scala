@@ -121,7 +121,8 @@ class BigQueryModelSpec extends AnyWordSpec with Matchers {
           TableQuery(StandardTableSource(bqTableReference)),
           None,
           None
-        )
+        ),
+        Map.empty
       ).toJava
       job.getConfiguration.getQuery.getQuery shouldEqual "SELECT * FROM `project.dataSet.table`"
     }
@@ -220,7 +221,7 @@ class BigQueryModelSpec extends AnyWordSpec with Matchers {
 
     "build Job object" which {
 
-      val job = BqExtractJob(extractJobConfig).toJava
+      val job = BqExtractJob(extractJobConfig, Map.empty).toJava
 
       "holds the given configuration" in {
         job.getConfiguration.getExtract.getDestinationUri shouldEqual "destination uri"

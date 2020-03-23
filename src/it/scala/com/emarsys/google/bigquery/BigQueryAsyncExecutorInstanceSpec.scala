@@ -29,8 +29,6 @@ class BigQueryAsyncExecutorInstanceSpec extends TestKit(ActorSystem("gcs-segment
     override val isLegacy     = false
   }
 
-  val labels = Map("test_key" -> "test_value")
-
   "#runAsyncJob" when {
     "called with copy command" should {
       "copy query result to destination table" in {
@@ -39,7 +37,7 @@ class BigQueryAsyncExecutorInstanceSpec extends TestKit(ActorSystem("gcs-segment
         val Success(result) = Await.ready(
    
           bigQueryAsyncExecutor.runAsyncJob(
-            bigQueryAsyncExecutor.copy(tableToCopyQuery, copyTargetTable, WriteDisposition.WRITE_TRUNCATE, labels),
+            bigQueryAsyncExecutor.copy(tableToCopyQuery, copyTargetTable, WriteDisposition.WRITE_TRUNCATE),
             copyTargetTable
           ),
           waitTimeout
@@ -53,7 +51,7 @@ class BigQueryAsyncExecutorInstanceSpec extends TestKit(ActorSystem("gcs-segment
 
         val Failure(error) = Await.ready(
           bigQueryAsyncExecutor.runAsyncJob(
-            bigQueryAsyncExecutor.copy(invalidQuery, copyTargetTable, WriteDisposition.WRITE_TRUNCATE, labels),
+            bigQueryAsyncExecutor.copy(invalidQuery, copyTargetTable, WriteDisposition.WRITE_TRUNCATE),
             copyTargetTable
           ),
           waitTimeout

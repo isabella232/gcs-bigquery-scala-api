@@ -80,5 +80,6 @@ object BigQueryJobModel {
       )
   }
 
-  case class UnexpectedBigQueryJobError(cause: Throwable) extends Throwable(cause.getMessage, cause)
+  case class UnexpectedBigQueryJobError(cause: Throwable, jobId: Option[String])
+      extends Throwable(cause.getMessage, cause)
 }

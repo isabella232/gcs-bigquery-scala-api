@@ -29,17 +29,21 @@ class BigQueryAsyncExecutorInstance(implicit system: ActorSystem, override val e
 
   override def runAsyncJob[T <: Job](command: TableCommand[T], table: BqTableReference): Future[BigQueryJobResult] = {
     logger.info("Executing job:" + command)
-    executeCommand(command, table).recoverWith {
-      case e: BigQueryJobError => Future.failed(e)
-      case e: Exception =>
-        logger.error(e, "Job failed for table {}", table.table)
-        Future.failed(UnexpectedBigQueryJobError(e))
-    }
+    for {
+      job    <- execute(command).recoverWith(wrapException(table, None))
+      result <- waitForResult(job, table).recoverWith(wrapException(table, Some(job.getJobReference.getJobId)))
+    } yield result
   }
 
-  private def executeCommand[T <: Job](command: TableCommand[T], table: BqTableReference): Future[BigQueryJobResult] =
+  private def wrapException[A](table: BqTableReference, jobId: Option[String]): PartialFunction[Throwable, Future[A]] = {
+    case e: BigQueryJobError => Future.failed(e)
+    case e =>
+      logger.error(e, "Job failed for table {}", table.table)
+      Future.failed(UnexpectedBigQueryJobError(e, jobId))
+  }
+
+  private def waitForResult[T <: Job](job: T, table: BqTableReference): Future[BigQueryJobResult] =
     for {
-      job       <- execute(command)
       jobResult <- (jobStatusChecker ? GetJobResult(job.getJobReference.getJobId, table.project)).mapTo[JobResult]
       result    <- handleJobResult(table, jobResult)
     } yield result
@@ -47,9 +51,9 @@ class BigQueryAsyncExecutorInstance(implicit system: ActorSystem, override val e
   override def handleJobResult(table: BqTableReference, jobResult: JobResult): Future[BigQueryJobResult] =
     Option(jobResult.job.getStatus.getErrorResult) match {
       case Some(errorResult) =>
-        Future.failed(BigQueryJobError(errorResult, table.table, jobResult.job.getId))
+        Future.failed(BigQueryJobError(errorResult, table.table, jobResult.job.getJobReference.getJobId))
       case None =>
         logger.info("Job finished for table {}", table.table)
-        getAmountOfTableRows(table).map(amount => BigQueryJobResult(amount, jobResult.job.getId))
+        getAmountOfTableRows(table).map(amount => BigQueryJobResult(amount, jobResult.job.getJobReference.getJobId))
     }
 }

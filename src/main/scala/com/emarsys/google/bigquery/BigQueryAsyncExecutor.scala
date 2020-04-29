@@ -13,7 +13,6 @@ import com.emarsys.google.bigquery.model.BigQueryJobModel.{
 import com.emarsys.google.bigquery.model.BqTableReference
 import com.google.api.services.bigquery.model.Job
 
-import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContextExecutor, Future}
 
 trait BigQueryAsyncExecutor extends BigQueryDataAccess {
@@ -48,9 +47,9 @@ class BigQueryAsyncExecutorInstance(implicit system: ActorSystem, override val e
   override def handleJobResult(table: BqTableReference, jobResult: JobResult): Future[BigQueryJobResult] =
     Option(jobResult.job.getStatus.getErrorResult) match {
       case Some(errorResult) =>
-        Future.failed(BigQueryJobError(errorResult, table.table))
+        Future.failed(BigQueryJobError(errorResult, table.table, jobResult.job.getId))
       case None =>
         logger.info("Job finished for table {}", table.table)
-        getAmountOfTableRows(table).map(amount => BigQueryJobResult(amount))
+        getAmountOfTableRows(table).map(amount => BigQueryJobResult(amount, jobResult.job.getId))
     }
 }

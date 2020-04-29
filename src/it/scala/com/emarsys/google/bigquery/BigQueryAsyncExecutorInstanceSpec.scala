@@ -6,22 +6,23 @@ import com.emarsys.google.bigquery.builder.{Query, StandardTableSource, TableQue
 import com.emarsys.google.bigquery.model.BigQueryJobModel.{BigQueryJobError, BigQueryJobResult, Reasons}
 import com.emarsys.google.bigquery.model.BqTableReference
 import com.google.cloud.bigquery.JobInfo.WriteDisposition
-import org.scalatest.{Matchers, WordSpecLike}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
 
-class BigQueryAsyncExecutorInstanceSpec extends TestKit(ActorSystem("gcs-segment")) with WordSpecLike with Matchers {
+class BigQueryAsyncExecutorInstanceSpec extends TestKit(ActorSystem("gcs-segment")) with AnyWordSpecLike with Matchers {
   val waitTimeout: FiniteDuration = 20.seconds
 
   import system.dispatcher
 
   implicit val bigQueryAsyncExecutor: BigQueryAsyncExecutor = new BigQueryAsyncExecutorInstance()
 
-  val tableToCopy  = BqTableReference(GoogleCloudConfig.google.projectName, GoogleCloudConfig.google.bigQuery.dataset, "it_test_copy")
-  val invalidTable = BqTableReference(GoogleCloudConfig.google.projectName, GoogleCloudConfig.google.bigQuery.dataset, "invalid")
-  val copyTargetTable =
+  private val tableToCopy  = BqTableReference(GoogleCloudConfig.google.projectName, GoogleCloudConfig.google.bigQuery.dataset, "it_test_copy")
+  private val invalidTable = BqTableReference(GoogleCloudConfig.google.projectName, GoogleCloudConfig.google.bigQuery.dataset, "invalid")
+  private val copyTargetTable =
     BqTableReference(GoogleCloudConfig.google.projectName, GoogleCloudConfig.google.bigQuery.resultsDataset, "it_test_copy_target")
 
   case class StringQuery(q: String) extends Query {
@@ -72,7 +73,7 @@ class BigQueryAsyncExecutorInstanceSpec extends TestKit(ActorSystem("gcs-segment
         ).value.get
 
         error should matchPattern {
-          case BigQueryJobError(_, Reasons.NotFound, _, _) =>
+          case BigQueryJobError(_, Reasons.NotFound, _, _, _) =>
         }
       }
     }

@@ -4,7 +4,7 @@ import com.google.api.services.bigquery.model.ErrorProto
 
 object BigQueryJobModel {
 
-  case class BigQueryJobResult(affectedRows: BigInt)
+  case class BigQueryJobResult(affectedRows: BigInt, jobId: String)
 
   trait BigQueryErrorReason
 
@@ -52,19 +52,31 @@ object BigQueryJobModel {
     case class OtherErrorReason(name: String) extends BigQueryErrorReason
   }
 
-  case class BigQueryJobError(message: String, reason: BigQueryErrorReason, location: String, table: String)
-      extends Throwable(message)
+  case class BigQueryJobError(
+      message: String,
+      reason: BigQueryErrorReason,
+      location: String,
+      table: String,
+      jobId: String
+  ) extends Throwable(message)
 
   object BigQueryJobError {
-    def apply(message: String, reason: BigQueryErrorReason, location: String, table: String): BigQueryJobError =
-      new BigQueryJobError(message, reason, location, table)
+    def apply(
+        message: String,
+        reason: BigQueryErrorReason,
+        location: String,
+        table: String,
+        jobId: String
+    ): BigQueryJobError =
+      new BigQueryJobError(message, reason, location, table, jobId)
 
-    def apply(errorResult: ErrorProto, table: String): BigQueryJobError =
+    def apply(errorResult: ErrorProto, table: String, jobId: String): BigQueryJobError =
       BigQueryJobError(
         errorResult.getMessage,
         BigQueryErrorReason.parseFromString(errorResult.getReason),
         errorResult.getLocation,
-        table
+        table,
+        jobId
       )
   }
 

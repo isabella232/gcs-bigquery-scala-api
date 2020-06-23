@@ -1,7 +1,9 @@
 # BigQuery Scala Api
 
-[ ![Codeship Status for emartech/gcs-bigquery-scala-api](https://app.codeship.com/projects/68e10a10-121a-0135-5667-2a4a553df23d/status?branch=master)](https://app.codeship.com/projects/216915)
-![Maven Central](https://img.shields.io/maven-central/v/com.emarsys/gcs-bigquery-scala-api_2.12.svg?label=Maven%20Central)
+[![Codeship Status for emartech/gcs-bigquery-scala-api](https://app.codeship.com/projects/68e10a10-121a-0135-5667-2a4a553df23d/status?branch=master)](https://app.codeship.com/projects/216915)
+[![Maven Central](https://img.shields.io/maven-central/v/com.emarsys/gcs-bigquery-scala-api_2.12.svg?label=Maven%20Central)](https://search.maven.org/artifact/com.emarsys/gcs-bigquery-scala-api_2.12)
+[![Maven Central](https://img.shields.io/maven-central/v/com.emarsys/gcs-bigquery-scala-api_2.13.svg?label=Maven%20Central)](https://search.maven.org/artifact/com.emarsys/gcs-bigquery-scala-api_2.13)
+
 
 ## Overview
 There are many libraries for Google Cloud Platform except for Scala.
@@ -9,33 +11,11 @@ There are many libraries for Google Cloud Platform except for Scala.
 Currently we aim at 
  * Create BigQuery jobs for running queries and tasks
  
-## Setup
-
-### `1.1.1` and above
-
-Add the following to `build.sbt`:
-
-```
-libraryDependencies += "com.emarsys" %% "gcs-bigquery-scala-api" % "1.1.1"
-```
-
-
-### Prior to `1.1.1`
-
-Add the following to `build.sbt`:
-
-```
-resolvers += "gcs-bigquery-scala-api on GitHub" at "https://github.com/emartech/gcs-bigquery-scala-api/master/releases"
-```
-```
-libraryDependencies += "com.emarsys" %% "gcs-bigquery-scala-api" % "1.1.0"
-```
-
 ## Getting Started
  Create api instance:
         
         val bigQueryInstance = BigQueryApi(projectName, Config.credentialWrite)
-    
+
  Create TableReference for a BigQuery table:
  
         val tableReference = BqTableReference("[project]", "[dataSet]", "[table]")
@@ -45,7 +25,7 @@ libraryDependencies += "com.emarsys" %% "gcs-bigquery-scala-api" % "1.1.0"
          val commandFactory = new CommandFactory {
               override implicit val bigQuery = bigQueryInstance
          }
-  
+
  Following table commands can be used:
  * drop table
  * create table
@@ -56,11 +36,9 @@ libraryDependencies += "com.emarsys" %% "gcs-bigquery-scala-api" % "1.1.0"
   * extract data to url in file format (default csv) 
   * insert data from file (default csv)
 
-Testing
-------------------
+## Testing
 
-Specify the `GCS_READ_KEY` env var in the `.env` file, then run `sbt test`.
-
+Specify the `GCS_PROJECT_NAME`, `GCS_PRIVATE_KEY_ID`, `GCS_READ_KEY`, `GCS_EMAIL_PREFIX` and `GCS_CLIENT_ID` env vars in the `.env` file, then run `sbt test` or `sbt it:test`.
 
 ## Creating a release
 
@@ -77,7 +55,6 @@ $ git push --tag
 ```
 
 After pushing the tag, while it is not strictly necessary, please [draft a release on github] with this tag too.
-
 
 [sbt-release-early]: https://github.com/scalacenter/sbt-release-early
 [semver]: https://semver.org

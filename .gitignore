@@ -9,3 +9,8 @@ local.*
 # IntelliJ specific
 .idea
 .env
+
+# metals
+.bloop/
+.metals/
+project/.bloop/

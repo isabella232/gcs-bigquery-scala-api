@@ -17,7 +17,7 @@ trait BigQueryDataAccess extends CommandFactory with BigQueryExecutor with Googl
 
   implicit val executor: ExecutionContextExecutor
 
-  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite)
+  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite, google)
 
   def executeQuery[T](
       query: Query

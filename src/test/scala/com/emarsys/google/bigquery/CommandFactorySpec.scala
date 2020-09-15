@@ -8,7 +8,7 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class CommandFactorySpec extends AnyWordSpec with Matchers with CommandFactory with GoogleCloudConfig {
 
-  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite)
+  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite, google)
 
   val tableReference = BqTableReference("[project]", "[dataSet]", "[table]")
 

@@ -28,7 +28,7 @@ class JobStatusChecker(
     with CommandFactory
     with GoogleCloudConfig {
 
-  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite)
+  lazy val bigQuery = BigQueryApi(google.projectName, credentialWrite, google)
 
   import JobStatusChecker._
   import context.dispatcher

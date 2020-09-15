@@ -39,7 +39,7 @@ lazy val root = (project in file("."))
         "com.chuusai"       %% "shapeless"            % "2.3.3",
         "com.typesafe.akka" %% "akka-actor"           % akkaV,
         "com.typesafe.akka" %% "akka-testkit"         % akkaV % "test",
-        "com.google.cloud"  % "google-cloud-bigquery" % "1.102.0",
+        "com.google.cloud"  % "google-cloud-bigquery" % "1.117.1",
         "org.scalatest"     %% "scalatest"            % "3.1.0" % "test",
         "joda-time"         % "joda-time"             % "2.10.5"
       )

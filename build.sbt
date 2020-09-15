@@ -57,7 +57,12 @@ inThisBuild(
       Developer("bkiss1988", "Balazs Kiss", "balazs.kiss@emarsys.com", url("https://github.com/bkiss1988")),
       Developer("doczir", "Robert Doczi", "doczi.r@gmail.com", url("https://github.com/doczir")),
       Developer("mfawal", "Margit Fawal", "margit.fawal@emarsys.com", url("https://github.com/mfawal")),
-      Developer("miklos-martin", "Miklos Martin", "miklos.martin@gmail.com", url("https://github.com/miklos-martin"))
+      Developer("miklos-martin", "Miklos Martin", "miklos.martin@gmail.com", url("https://github.com/miklos-martin")),
+      Developer("suliatis", "Attila Suli", "attila.suli@emarsys.com", url("https://github.com/suliatis")),
+      Developer("hamargyuri", "Gyorgy Hamar", "gyorgy.hamar@emarsys.com", url("https://github.com/hamargyuri")),
+      Developer("tt0th", "Tibor Toth", "tibor.toth@emarsys.com", url("https://github.com/tt0th")),
+      Developer("lkonya", "Laszlo Konya", "laszlo.konya@emarsys.com", url("https://github.com/lkonya")),
+      Developer("itsdani", "Daniel Segesdi", "daniel.segesdi@emarsys.com", url("https://github.com/itsdani"))
     ),
     scmInfo := Some(
       ScmInfo(

@@ -37,6 +37,7 @@ trait GoogleCloudConfig {
 
   lazy val google =
     GoogleCloudConfig.GoogleConfig(
+      useWorkloadIdentityAuth = googleConfig.getBoolean("use-workload-identity-auth"),
       projectName = googleConfig.getString("project.name"),
       storageBucket = googleConfig.getString("storage.bucket"),
       bigQuery = GoogleCloudConfig.BigQueryConfig(
@@ -52,6 +53,7 @@ trait GoogleCloudConfig {
 
 object GoogleCloudConfig extends GoogleCloudConfig {
   case class GoogleConfig(
+      useWorkloadIdentityAuth: Boolean,
       projectName: String,
       storageBucket: String,
       bigQuery: BigQueryConfig

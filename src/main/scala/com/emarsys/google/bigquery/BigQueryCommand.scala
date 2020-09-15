@@ -4,9 +4,9 @@ import akka.event.LoggingAdapter
 import com.emarsys.google.bigquery.model.BqQueryJobConfig
 import com.google.api.services.bigquery.model.{GetQueryResultsResponse, Job, Table, TableDataInsertAllResponse}
 import com.google.api.services.bigquery.{Bigquery, BigqueryRequest}
-import org.joda.time.Duration
 
 import scala.concurrent.{ExecutionContext, Future}
+import java.time.{Duration, Instant}
 
 sealed abstract class TableCommand[T](val command: BigqueryRequest[T])
 case class DeleteTableCommand(override val command: Bigquery#Tables#Delete) extends TableCommand[Void](command)
@@ -31,14 +31,14 @@ trait BigQueryExecutor {
   implicit val logger: LoggingAdapter
 
   def logTime[T](f: => (T, String)): T = {
-    val start             = org.joda.time.DateTime.now()
+    val start             = Instant.now()
     val (result, message) = f
-    val end               = org.joda.time.DateTime.now()
-    val time              = Duration.millis(end.minus(start.getMillis).getMillis)
+    val end               = Instant.now()
+    val time              = Duration.between(start, end)
     val log               = (s: String) => if (logger != null) logger.debug(s) else println(s)
 
     log(
-      message + "BigQuery Execution timer=" + (time.getMillis.toDouble / 1000.0)
+      message + "BigQuery Execution timer=" + (time.toMillis.toDouble / 1000.0)
     )
     result
   }

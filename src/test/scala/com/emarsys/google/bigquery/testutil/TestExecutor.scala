@@ -3,9 +3,10 @@ package com.emarsys.google.bigquery.testutil
 import com.emarsys.google.bigquery._
 import com.emarsys.google.bigquery.model.BqQueryJobConfig
 import com.google.api.services.bigquery.model.{ErrorProto, Job, JobReference, JobStatus}
-import org.joda.time.LocalDate
 
 import scala.concurrent.{ExecutionContext, Future}
+
+import java.time.LocalDate
 
 trait TestExecutor extends BigQueryExecutor {
 
@@ -35,7 +36,7 @@ trait TestExecutor extends BigQueryExecutor {
 
   def isOpenQueryOnErrorDate(jobConfig: BqQueryJobConfig) = {
     jobConfig.query.show
-      .contains("opens_" + oneTableErrorDate.toString("yyyyMMdd"))
+      .contains("opens_" + oneTableErrorDate.formatted("yyyyMMdd"))
   }
 
   def createJob(status: String) = {

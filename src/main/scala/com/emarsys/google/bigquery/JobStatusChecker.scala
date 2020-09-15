@@ -42,6 +42,7 @@ class JobStatusChecker(
 
     case PollJobResult(sender, jobRequest) =>
       queryJob(jobRequest).map(pollJob(sender, jobRequest))
+      ()
   }
 
   def queryJob(jobRequest: GetJobResult) =

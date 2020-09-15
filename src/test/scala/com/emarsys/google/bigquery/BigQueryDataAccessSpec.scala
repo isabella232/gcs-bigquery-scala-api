@@ -6,13 +6,11 @@ import com.emarsys.google.bigquery.builder.{StandardTableSource, TableQuery}
 import com.emarsys.google.bigquery.exception.UnsuccessfulQueryException
 import com.emarsys.google.bigquery.format._
 import com.emarsys.google.bigquery.model.BqTableReference
-import org.joda.time.DateTime
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 case class ClickEvent(
     campaignId: Int,
-    eventTime: DateTime,
     deviceName: String,
     customerId: Int,
     messageId: Int

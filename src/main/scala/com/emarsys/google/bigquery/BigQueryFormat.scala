@@ -5,7 +5,6 @@ import com.google.api.services.bigquery.model.{TableCell, TableRow}
 import scala.collection.JavaConverters._
 import shapeless._
 import labelled.{FieldType, field}
-import org.joda.time.{DateTime, DateTimeZone}
 import com.google.api.client.util.Data._
 
 import scala.util.Try
@@ -60,19 +59,6 @@ package object format {
       v.toString.toBoolean
   }
 
-  implicit object DatePrimitive extends BigQueryType[DateTime] {
-    def toValue(s: DateTime) = {
-      (s.toDateTime(DateTimeZone.UTC).getMillis / 1000).toString
-        .asInstanceOf[AnyRef]
-    }
-
-    def fromValue(v: AnyRef) = {
-      val d = v.toString.toDouble
-      val l = (d * 1000).toLong
-      new org.joda.time.DateTime(l, DateTimeZone.UTC)
-    }
-  }
-
   implicit def optionType[T](
       implicit tType: BigQueryType[T]
   ): BigQueryType[Option[T]] =
@@ -109,8 +95,7 @@ package object format {
   }
 
   implicit def hListBigQueryFormat[Key <: Symbol, Value, Tail <: HList](
-      implicit witness: Witness.Aux[Key],
-      valueFormatter: Lazy[BigQueryType[Value]],
+      implicit valueFormatter: Lazy[BigQueryType[Value]],
       restFormatter: Lazy[BigQueryFormat[Tail]]
   ): BigQueryFormat[FieldType[Key, Value] :: Tail] =
     new BigQueryFormat[FieldType[Key, Value] :: Tail] {
@@ -193,8 +178,7 @@ package object format {
 
   implicit def familyBigQueryFormat[T, Repr](
       implicit gen: LabelledGeneric.Aux[T, Repr],
-      reprFormatter: Lazy[BigQueryFormat[Repr]],
-      tpe: Typeable[T]
+      reprFormatter: Lazy[BigQueryFormat[Repr]]
   ): BigQueryFormat[T] =
     new BigQueryFormat[T] {
       def toTableRow(t: T) =
@@ -215,7 +199,6 @@ package object format {
 
 object syntax {
   import api._
-  import format._
   implicit class RichBigResult[R](val e: FormatResult[R]) extends AnyVal {
     def getOrThrowError: R = e match {
       case Left(error) =>

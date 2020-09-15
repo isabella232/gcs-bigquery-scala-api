@@ -26,5 +26,6 @@ object BigQueryApi extends GoogleCloudConfig {
     request
       .setReadTimeout(google.bigQuery.httpReadTimeout.toMillis.toInt)
       .setConnectTimeout(google.bigQuery.httpConnectionTimeout.toMillis.toInt);
+    ()
   }
 }
